@@ -1,0 +1,85 @@
+html {
+    box-sizing: border-box;
+}
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+body {
+    background-color: #F2F1E1;
+}
+
+.header {
+    position: relative;
+    top: 0px;
+    height: 85px;
+    background-image: url(../items/img/Header.png);
+    background-size: cover;
+}
+
+.header_title {
+    position: absolute;
+    left: 50%;
+    top: 25%;
+    transform: translate(-50%, 25%);
+    font-size: 24px;
+    color: white;
+}
+
+.button_text_style {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 34px;
+    text-align: center;
+
+    color: #000000;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.about_button {
+    position: absolute;
+    width: 190px;
+    height: 85px;
+    left: 0px;
+    top: 0px;
+
+    border: 0;
+    background-color: #E94C8D;
+}
+
+.sign_in_button {
+    position: absolute;
+    width: 190px;
+    height: 85px;
+    right: 0px;
+    top: 0px;
+
+    border: 0;
+    background-color: #E94C8D;
+}
+
+.search_button {
+    position: absolute;
+    width: 15vw;
+    height: 10vh;
+    left: 10vw;
+    top: 76vh;
+
+    border: 0;
+    background: #E94C8D;
+
+    box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.5);
+    filter: blur(0.5px);
+    border-radius: 15px;
+}
+
+.interactive_map {
+    position: absolute;
+    width: 59vw;
+    height: 63vh;
+    left: 36vw;
+    top: 22vh;
+    background-color: #D9D9D9;
+}
