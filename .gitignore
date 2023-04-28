@@ -1,3 +1,9 @@
 /src/node_modules
 src/package.json
 src/package-lock.json
+
+/src/core/Wafia/.vs
+/src/core/Wafia/Wafia/bin
+/src/core/Wafia/Wafia/html/node_modules
+/src/core/Wafia/Wafia/obj
+

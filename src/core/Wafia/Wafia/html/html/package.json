@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "gulp-html": "^5.0.0"
+  }
+}
