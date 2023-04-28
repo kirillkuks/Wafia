@@ -11,23 +11,43 @@ async Task HandleRequest(HttpContext context)
     if (context.Request.Path == "/api/signIn")
     {
         context.Response.StatusCode = 200;
-        Answer answer = new Answer();
+        RedirectResponse answer = new RedirectResponse();
+        answer.Link = "/signIn";
 
         await context.Response.WriteAsJsonAsync(answer);
+    }
+
+    if (context.Request.Path == "/signIn")
+    {
+        context.Response.ContentType = "text/html; charset=utf-8";
+        await context.Response.SendFileAsync("wwwroot/PersonalArea.html");
     }
 
     else if (context.Request.Path == "/api/about")
     {
         context.Response.StatusCode = 200;
-        Answer answer = new Answer();
+        RedirectResponse answer = new RedirectResponse();
+        answer.Link = "/about";
 
         await context.Response.WriteAsJsonAsync(answer);
+    }
+
+    else if (context.Request.Path == "/about")
+    {
+        context.Response.ContentType = "text/html; charset=utf-8";
+        await context.Response.SendFileAsync("wwwroot/About.html");
+    }
+
+    else if (context.Request.Path == "/api/search")
+    {
+        context.Response.ContentType = "text/html; charset=utf-8";
+        await context.Response.WriteAsync("<h2>QWEQWE</h2>");
     }
 
     else
     {
         context.Response.ContentType = "text/html; charset=utf-8";
-        await context.Response.SendFileAsync("html/html/GuestScreen.html");
+        await context.Response.SendFileAsync("wwwroot/GuestScreen.html");
     }
 }
 
@@ -38,8 +58,8 @@ app.Run(HandleRequest);
 app.Run();
 
 
-class Answer
+class RedirectResponse
 {
-    public string Name { get; set; } = "";
+    public string Link { get; set; } = "";
 }
 
