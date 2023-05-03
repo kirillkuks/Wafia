@@ -13,8 +13,8 @@ body {
     position: relative;
     top: 0px;
     height: 85px;
-    background-image: url(../items/img/Header.png);
-    background-size: cover;
+    background-image: url(../img/baseHeader.png);
+    background-size: contain;
 }
 
 .header_title {
@@ -23,7 +23,7 @@ body {
     top: 25%;
     transform: translate(-50%, 25%);
     font-size: 24px;
-    color: black;
+    color: white;
 }
 
 .button_text_style {
