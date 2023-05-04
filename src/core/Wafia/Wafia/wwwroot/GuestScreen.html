@@ -9,23 +9,13 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header class="header">
-        <div class="header_title">
-            <h1>Web Application For Infrastructure Analyze</h1>
-        </div>
-        <a href="About.html">
-            <button class="about_button" type="button" id="AboutButton">
-                <p class="button_text_style">About</p>
-            </button>
-        </a>
-
-        <div id="log_in_button"></div>
-    </header>
+    <div id="Header"></div>
 
     <main class="main">
         <button class="search_button" id="SearchButton">
             <p class="button_text_style">Search</p>
         </button>
+
 
         <section class="interactive_map">
         </section>
@@ -34,8 +24,7 @@
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-<script type="text/babel" src="js/test.js"></script>
-<script type="text/babel" src="js/authorization.js"></script>
+<script type="text/babel" src="js/authorization1.js"></script>
 <script>    
     document.getElementById("SearchButton").addEventListener("click", async () => {
         const response = await fetch("/api/search", {
