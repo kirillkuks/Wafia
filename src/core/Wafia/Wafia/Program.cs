@@ -23,6 +23,22 @@ async Task HandleRequest(HttpContext context)
         await context.Response.SendFileAsync("wwwroot/PersonalArea.html");
     }
 
+    else if (context.Request.Path == "/api/login")
+    {
+        var loginData = await context.Request.ReadFromJsonAsync<LoginData>();
+
+        if (loginData != null && loginData.Login == "admin" && loginData.Password == "admin")
+        {
+            context.Response.StatusCode = 200;
+            await context.Response.WriteAsJsonAsync(new { message = "OK" });
+        }
+        else
+        {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsJsonAsync(new { message = "Invalid Login or password" });
+        }
+    }
+
     else if (context.Request.Path == "/api/about")
     {
         context.Response.StatusCode = 200;
@@ -61,5 +77,11 @@ app.Run();
 class RedirectResponse
 {
     public string Link { get; set; } = "";
+}
+
+class LoginData
+{
+    public string Login { get; set; } = "";
+    public string Password { get; set; } = "";
 }
 
