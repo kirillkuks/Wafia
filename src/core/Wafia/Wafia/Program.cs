@@ -1,8 +1,21 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
+System.Collections.Generic.SortedDictionary<string, int> activeUsers = new();
+List<LoginData> users = new();
+users.Add(new LoginData("admin", "admin"));
+users.Add(new LoginData("Xst", "Xst"));
+users.Add(new LoginData("Tais", "Tais"));
+users.Add(new LoginData("kirillkuks", "kirillkuks"));
+
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+    {
+        options.Cookie.Name = "Wafia.Session";
+        options.Cookie.IsEssential = true;
+    }
+);
+
 var app = builder.Build();
 
 
@@ -26,8 +39,21 @@ async Task HandleRequest(HttpContext context)
     else if (context.Request.Path == "/api/login")
     {
         var loginData = await context.Request.ReadFromJsonAsync<LoginData>();
+        bool userFound = false;
 
-        if (loginData != null && loginData.Login == "admin" && loginData.Password == "admin")
+        if (loginData != null)
+        {
+            for (int i = 0; i < users.Count && !userFound; ++i)
+            {
+                if (loginData.Login == users[i].Login && loginData.Password == users[i].Password)
+                {
+                    activeUsers.Add(context.Session.Id, i);
+                    userFound = true;
+                }
+            }
+        }
+
+        if (userFound)
         {
             context.Response.StatusCode = 200;
             await context.Response.WriteAsJsonAsync(new { message = "OK" });
@@ -36,6 +62,20 @@ async Task HandleRequest(HttpContext context)
         {
             context.Response.StatusCode = 400;
             await context.Response.WriteAsJsonAsync(new { message = "Invalid Login or password" });
+        }
+    }
+
+    else if (context.Request.Path == "/api/get_user_rights")
+    {
+        context.Response.StatusCode = 200;
+
+        if (activeUsers.ContainsKey(context.Session.Id))
+        {
+            await context.Response.WriteAsJsonAsync(new { state = "user" });
+        }
+        else
+        {
+            await context.Response.WriteAsJsonAsync(new { state = "guest" });
         }
     }
 
@@ -69,6 +109,8 @@ async Task HandleRequest(HttpContext context)
 
 
 app.UseStaticFiles();
+app.UseSession();
+
 
 app.Run(HandleRequest);
 app.Run();
@@ -81,6 +123,12 @@ class RedirectResponse
 
 class LoginData
 {
+    public LoginData(string login, string password)
+    {
+        Login = login;
+        Password = password;
+    }
+
     public string Login { get; set; } = "";
     public string Password { get; set; } = "";
 }
