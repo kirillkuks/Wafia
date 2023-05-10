@@ -47,7 +47,7 @@ async Task HandleRequest(HttpContext context)
             {
                 if (loginData.Login == users[i].Login && loginData.Password == users[i].Password)
                 {
-                    activeUsers.Add(context.Session.Id, i);
+                    context.Session.SetInt32("userId", i);
                     userFound = true;
                 }
             }
@@ -69,7 +69,7 @@ async Task HandleRequest(HttpContext context)
     {
         context.Response.StatusCode = 200;
 
-        if (activeUsers.ContainsKey(context.Session.Id))
+        if (context.Session.Keys.Contains("userId"))
         {
             await context.Response.WriteAsJsonAsync(new { state = "user" });
         }

@@ -5,48 +5,48 @@ import * as styles from "./styles.js";
 import "../css/reset.css";
 
 
+const EGuestScreenState = { kIdle: 0, kLogIn: 1, kSignUp: 2 };
+const EUserRight = { kGuest: "guest", kUser: "user", kAdmin: "admin" };
+
+
 class Authorization extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLogIn: false,
-            isLoggingIn: false,
-            invalidLoginMsg: false
+            invalidLoginMsg: false,
+            screenState: EGuestScreenState.kIdle,
+            userRight: EUserRight.kGuest
         };
     }
 
-    outputString() {
-        if (this.state.isLogIn) {
-            return <p style={styles.ButtonTextStyle}>Sign In2</p>
+    logInButtonOutputString() {
+        console.log(this.state.userRight);
+
+        if (this.state.userRight === EUserRight.kGuest) {
+            return <p style={styles.ButtonTextStyle}>Log In</p>
         } else {
-            return <p style={styles.ButtonTextStyle}>Sign In</p>
+            return <p style={styles.ButtonTextStyle}>Personal Area</p>
         }
     }
 
+    logInButtonOnClick() {
+        if (this.state.userRight === EUserRight.kGuest) {
+            return () => {
+                this.setState({ screenState: EGuestScreenState.kLogIn })
+            }
+        }
 
+        return () => {
+            window.location.assign("../PersonalArea.html");
+        }
+    }
 
     renderLogInButton() {
-        let state = "uninit"; 
-        console.log(state);
-
-        (async () => {
-            const responce = await fetch("/api/get_user_rights", {
-                method: "POST",
-                headers: { "Accept": "application/json", "Content-Type": "application/json" }
-            })
-
-            state = "init";
-            console.log(state);
-        })();
-
         return <button
-                onClick={() => {
-                        this.setState({ isLoggingIn: true });
-                    }
-                }
+                onClick={this.logInButtonOnClick()}
                 type="button"
                 style={styles.LogInButtonStyle}>
-                    { state === "uninit" ? this.outputString() : <p style={styles.ButtonTextStyle}>FAIL</p>}
+                    { this.logInButtonOutputString() }
                 </button>
     }
 
@@ -93,19 +93,19 @@ class Authorization extends React.Component {
     }
 
     renderLogInWindow() {
-        if (this.state.isLoggingIn) {
+        if (this.state.screenState == EGuestScreenState.kLogIn) {
             return (
                 <section style={styles.LogInWindowStyle}>
                     <h2 style={styles.LogInTextStyle}>Sing In</h2>
                     <input
-                        maxlength="100"
+                        maxLength="100"
                         style={styles.LogInFieldLoginStyle}
                         id="LoginField"
                         placeholder="Name">
                     </input>
                     <input
                         type="password"
-                        maxlength="100"
+                        maxLength="100"
                         style={styles.PasswordFieldLoginStyle}
                         id="PasswordField"
                         placeholder="Password">
@@ -113,7 +113,7 @@ class Authorization extends React.Component {
                     <button
                         style={styles.ExitButtonStyle}
                         onClick={() => {
-                            this.setState({ isLoggingIn: false, isLoginInvalid: false })
+                            this.setState({ screenState: EGuestScreenState.kIdle, isLoginInvalid: false })
                         }}>
                         <img src="../img/exit.png"></img>
                     </button>
@@ -153,6 +153,21 @@ class Authorization extends React.Component {
     }
 
     render() {
+        (async () => {
+            const responce = await fetch("/api/get_user_rights", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" }
+            })
+
+            const answer = await responce.json();
+            console.log("user status " + answer.state);
+
+            if (this.state.userRight != answer.state)
+            {
+                this.setState({userRight: answer.state});
+            }
+        })();
+
         return (
         <div>
             { this.renderHeader() }
