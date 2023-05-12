@@ -8,9 +8,9 @@ namespace WAFIA.Database.Types
         public string Mail { get; set; }
         public string Password { get; set; }
         public bool IsAdmin { get; set; }
-        public ulong Id { get; set; }
+        public long Id { get; set; }
 
-        public Account(ulong id, string login, string mail, string password, bool isAdmin)
+        public Account(long id, string login, string mail, string password, bool isAdmin)
         {
             Id = id;
             Login = login;

@@ -1,5 +1,4 @@
 ﻿using NpgsqlTypes;
-using System;
 using WAFIA.Database;
 using WAFIA.Database.Connectors;
 using WAFIA.Database.Types;
@@ -11,7 +10,7 @@ namespace WAFIA
     using Polygon = NpgsqlPolygon;
     class Program {
         async static Task Main() {
-
+            /*
             bool test_ac = false;
             bool test_gc = false;
             bool test_ic = false;
@@ -150,7 +149,29 @@ namespace WAFIA
                 catch (Exception ex) {
                     Console.WriteLine(ex.ToString());
                 }
+            
             }
+            */
+
+            NpgsqlConnector nc;
+            try
+            {
+                if (!ConnParser.Parse("../../../connection_data.txt", out string? host,
+                    out string? name, out string? password, out string? baseName))
+                {
+                    return;
+                }
+                else
+                {
+                    nc = new(host, name, password, baseName);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return;
+            }
+
         }
     }
 }

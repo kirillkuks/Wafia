@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System.Security.Principal;
 using WAFIA.Database.Types;
 
 namespace WAFIA.Database.Connectors
@@ -89,7 +90,7 @@ namespace WAFIA.Database.Connectors
             }
         }
 
-        public async Task<bool> ChangePassword(ulong id, string password)
+        public async Task<bool> ChangePassword(long id, string password)
         {
 
             cmd.CommandText = $"UPDATE account SET password='{password}' WHERE id = '{id}'";
@@ -117,7 +118,8 @@ namespace WAFIA.Database.Connectors
 
             cmd.CommandText = $"UPDATE account" +
                 $" SET login='{account.Login}'," +
-                $"password='{account.Password}' " +
+                $"password='{account.Password}', " +
+                $"mail='{account.Mail}'" +
                 $"WHERE id = '{account.Id}'";
 
             try
@@ -150,6 +152,53 @@ namespace WAFIA.Database.Connectors
             catch
             {
                 return false;
+            }
+        }
+
+        public async Task<bool> Delete(string login)
+        {
+            cmd.CommandText = $"DELETE  FROM account WHERE login='{login}'";
+            try
+            {
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<Account?> Get(long id)
+        {
+            cmd.CommandText = "SELECT login, mail, password, is_admin FROM account WHERE " +
+                $"id = '{id}'";
+
+            NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+            try
+            {
+                if (await reader.ReadAsync())
+                {
+                    var account = new Account(
+                        id,
+                        (string)reader["login"],
+                        (string)reader["mail"],
+                        (string)reader["password"],
+                        (bool)reader["is_admin"]);
+                    reader.Close();
+                    return account;
+                }
+                else
+                {
+                    reader.Close();
+                    return null;
+                }
+            }
+            catch
+            {
+                reader.Close();
+                return null;
             }
         }
     }
