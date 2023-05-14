@@ -1,3 +1,8 @@
+function BuildStyle(parentStyle, childStyle) {
+    return Object.assign({}, parentStyle, childStyle);
+}
+
+
 export const BodyStyle = {
     "backgroundColor": "#F2F1E1"
 }
@@ -125,7 +130,7 @@ export const InterctiveMapStyle = {
     "backgroundColor": "#D9D9D9"
 }
 
-export const LogInWindowStyle = {
+export const PopUpWindowStyle = {
     "position": "absolute",
     "width": "40vw",
     "height": "60vh",
@@ -137,7 +142,7 @@ export const LogInWindowStyle = {
     "boxShadow": "0px 8px 8px rgba(0, 0, 0, 0.5)",
 }
 
-export const LogInTextStyle = {
+export const PopUpHeaderTextStyle = {
     "position" : "relative",
     "fontFamily": 'Inter',
     "fontStyle": "normal",
@@ -150,9 +155,8 @@ export const LogInTextStyle = {
     "color": "#000000",
 }
 
-export const LogInFieldLoginStyle = {
+const InputButton = {
     "position" : "relative",
-    "top": "20%",
     "left": "50%",
     "transform": "translate(-50%, 0%)",
     "borderRadius": "7px",
@@ -160,12 +164,22 @@ export const LogInFieldLoginStyle = {
     "height": "5vh"
 }
 
-export const PasswordFieldLoginStyle = {
-    "position" : "relative",
-    "top": "25%",
-    "left": "50%",
-    "transform": "translate(-50%, 0%)",
-    "borderRadius": "7px",
-    "width": "25vw",
-    "height": "5vh"
-}
+export const LogInFieldLoginStyle = BuildStyle(InputButton, {
+    top: "20%"
+});
+
+export const PasswordFieldLoginStyle = BuildStyle(InputButton, {
+    top: "25%"
+});
+
+export const SignUpFieldLoginStyle = BuildStyle(InputButton, {
+    top: "25%"
+});
+
+export const SignUpFieldPasswordStyle = BuildStyle(InputButton, {
+    top: "30%"
+});
+
+export const SignUpFieldRepeatPasswordStyle = BuildStyle(InputButton, {
+    top: "35%"
+});

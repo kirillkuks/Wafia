@@ -68,6 +68,7 @@ async Task HandleRequest(HttpContext context) {
 
     else if (context.Request.Path == "/api/get_user_rights") {
         context.Response.StatusCode = 200;
+        var userId = context.Session.GetInt32("userId");
 
         if (context.Session.Keys.Contains("userId")) {
             await context.Response.WriteAsJsonAsync(new { state = "user" });
