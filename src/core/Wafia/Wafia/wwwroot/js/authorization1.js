@@ -1,20 +1,18 @@
 'use strict';
 import React from "react";
 import ReactDOM from "react-dom";
-import * as styles from "./styles.js";
 import "../css/reset.css";
 
+import * as styles from "./styles.js";
+import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
+import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
+import LogInWindowPopUpCreaterComponent from "./logInPopUp.js";
 
-const EGuestScreenState = { kIdle: 0, kLogIn: 1, kSignUp: 2 };
-const EUserRight = { kGuest: "guest", kUser: "user", kAdmin: "admin" };
 
-
-class Authorization extends React.Component {
+class Authorization extends LogInWindowPopUpCreaterComponent {
     constructor(props) {
         super(props);
         this.state = {
-            invalidLoginMsg: false,
-            screenState: EGuestScreenState.kIdle,
             userRight: EUserRight.kGuest
         };
     }
@@ -32,12 +30,12 @@ class Authorization extends React.Component {
     logInButtonOnClick() {
         if (this.state.userRight === EUserRight.kGuest) {
             return () => {
-                this.setState({ screenState: EGuestScreenState.kLogIn })
+                super.setState({ screenState: EScreenState.kLogIn })
             }
         }
 
         return () => {
-            window.location.assign("../PersonalArea.html");
+            window.location.assign(EHtmlPages.kPersonalArea);
         }
     }
 
@@ -58,7 +56,7 @@ class Authorization extends React.Component {
                     <h1>Web Application For Infrastructure Analyze</h1>
                 </div>
 
-                <a href="../About.html">
+                <a href={EHtmlPages.kAbout}>
                     <button style={styles.AboutButtonStyle}>
                         <p style={styles.ButtonTextStyle}>About</p>
                     </button>
@@ -86,85 +84,26 @@ class Authorization extends React.Component {
                     }}>
                     <p style={styles.ButtonTextStyle}>Search</p>
                 </button>
-                <section style={styles.InterctiveMapStyle}></section>
-                {this.renderLogInWindow()}
+                <section style={styles.InterctiveMapStyle}>
+                </section>
+                {super.render()}
             </main>
         );
     }
 
-    renderLogInWindow() {
-        if (this.state.screenState == EGuestScreenState.kLogIn) {
-            return (
-                <section style={styles.LogInWindowStyle}>
-                    <h2 style={styles.LogInTextStyle}>Sing In</h2>
-                    <input
-                        maxLength="100"
-                        style={styles.LogInFieldLoginStyle}
-                        id="LoginField"
-                        placeholder="Name">
-                    </input>
-                    <input
-                        type="password"
-                        maxLength="100"
-                        style={styles.PasswordFieldLoginStyle}
-                        id="PasswordField"
-                        placeholder="Password">
-                    </input>
-                    <button
-                        style={styles.ExitButtonStyle}
-                        onClick={() => {
-                            this.setState({ screenState: EGuestScreenState.kIdle, isLoginInvalid: false })
-                        }}>
-                        <img src="../img/exit.png"></img>
-                    </button>
-                    {this.state.isLoginInvalid ?
-                    <h2 style={styles.WarningTextStyle}>Invalid login or password</h2> :
-                    null}
-                    <button
-                        style={styles.LogInNextButtonStyle}
-                        onClick={async () => {
-                            const response = await fetch("/api/login", {
-                                method: "POST",
-                                headers: { "Accept": "application/json", "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    "Login": document.getElementById("LoginField").value,
-                                    "Password": document.getElementById("PasswordField").value
-                                })
-                            });
-                    
-                            if (response.ok) {
-                                const answer = await response.json();
-                                window.location.assign("../PersonalArea.html");
-                            }
-                            else {
-                                this.setState({isLoginInvalid: true});
-                            }
-                        }}>
-                        <img src="../img/arrowNext.png"></img>
-                    </button>
-                    <button style={styles.DontHaveAccountButtonStyle}>
-                        <p style={styles.ButtonTextStyle}>Don't have an account?</p>
-                    </button>
-                </section>
-            );
-        }
-
-        return null;
-    }
-
     render() {
         (async () => {
-            const responce = await fetch("/api/get_user_rights", {
+            const responce = await fetch("/api/get_session_info", {
                 method: "POST",
                 headers: { "Accept": "application/json", "Content-Type": "application/json" }
             })
 
-            const answer = await responce.json();
-            console.log("user status " + answer.state);
+            const sessionInfo = await responce.json();
+            console.log("user status " + sessionInfo.user_rights);
 
-            if (this.state.userRight != answer.state)
+            if (this.state.userRight != sessionInfo.user_rights)
             {
-                this.setState({userRight: answer.state});
+                this.setState({userRight: sessionInfo.user_rights});
             }
         })();
 
@@ -174,6 +113,20 @@ class Authorization extends React.Component {
             { this.renderMain() }
         </div>
         );
+
+        // return (
+        //     <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
+        //         <TileLayer
+        //             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        //             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        //         />
+        //         <Marker position={[51.505, -0.09]}>
+        //             <Popup>
+        //             A pretty CSS3 popup. <br /> Easily customizable.
+        //             </Popup>
+        //         </Marker>
+        //     </MapContainer>
+        // );
     }
 }
 

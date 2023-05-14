@@ -65,18 +65,67 @@ async Task HandleRequest(HttpContext context)
         }
     }
 
-    else if (context.Request.Path == "/api/get_user_rights")
+    else if (context.Request.Path == "/api/signup")
     {
-        context.Response.StatusCode = 200;
+        var loginData = await context.Request.ReadFromJsonAsync<LoginData>();
+        bool userFound = false;
 
-        if (context.Session.Keys.Contains("userId"))
+        if (loginData != null)
         {
-            await context.Response.WriteAsJsonAsync(new { state = "user" });
+            for (int i = 0; i < users.Count && !userFound; ++i)
+            {
+                if (loginData.Login == users[i].Login)
+                {
+                    userFound = true;
+                }
+            }
+
+            if (!userFound)
+            {
+                users.Add(loginData);
+            }
+            else
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsJsonAsync(new { message = "user is already exist" });
+            }
         }
         else
         {
-            await context.Response.WriteAsJsonAsync(new { state = "guest" });
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsJsonAsync(new { message = "invalid login or password" });
         }
+
+    }
+
+    else if (context.Request.Path == "/api/get_session_info")
+    {
+        var userRight = "guest";
+        var login = "";
+
+        context.Response.StatusCode = 200;
+        var userId = context.Session.GetInt32("userId");
+
+        if (userId != null)
+        {
+            if (userId.Value == 0)
+            {
+                userRight = "admin";
+            }
+            else
+            {
+                userRight = "user";
+            }
+
+            login = users[userId.Value].Login;
+        }
+
+        await context.Response.WriteAsJsonAsync(new
+            {
+                user_rights = userRight,
+                user_login = login
+            }
+        );
     }
 
     else if (context.Request.Path == "/api/about")
