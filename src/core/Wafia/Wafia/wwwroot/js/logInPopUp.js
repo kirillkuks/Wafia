@@ -1,6 +1,6 @@
 import React from "react";
 import * as styles from "./styles.js";
-import { EScreenState, EHtmlPages } from "./common.js";
+import { EScreenState, EHtmlPages, ClientConsts } from "./common.js";
 
 
 export default class LogInWindowPopUpCreaterComponent extends React.Component {
@@ -32,14 +32,14 @@ export default class LogInWindowPopUpCreaterComponent extends React.Component {
             <section style={styles.PopUpWindowStyle}>
                 <h2 style={styles.PopUpHeaderTextStyle}>Log In</h2>
                 <input
-                    maxLength="100"
+                    maxLength={ClientConsts.kMaxLoginLength}
                     style={styles.LogInFieldLoginStyle}
                     id="LoginField"
                     placeholder="Name">
                 </input>
                 <input
                     type="password"
-                    maxLength="100"
+                    maxLength={ClientConsts.kMaxPasswordLength}
                     style={styles.PasswordFieldLoginStyle}
                     id="PasswordField"
                     placeholder="Password">
@@ -94,21 +94,21 @@ export default class LogInWindowPopUpCreaterComponent extends React.Component {
                 <h2 style={styles.WarningTextStyle}>{this.state.signUpErrorMessage}</h2> :
                 null}
                 <input
-                maxLength="100"
+                maxLength={ClientConsts.kMaxLoginLength}
                 style={styles.SignUpFieldLoginStyle}
                 id="SignUpLoginField"
                 placeholder="Email">
                 </input>
                 <input
                 type="password"
-                maxLength="100"
+                maxLength={ClientConsts.kMaxPasswordLength}
                 style={styles.SignUpFieldPasswordStyle}
                 id="SignUpPasswordField"
                 placeholder="Password">
                 </input>
                 <input
                 type="password"
-                maxLength="100"
+                maxLength={ClientConsts.kMaxPasswordLength}
                 style={styles.SignUpFieldRepeatPasswordStyle}
                 id="SignUpRepeatPasswordField"
                 placeholder="Repeat password">

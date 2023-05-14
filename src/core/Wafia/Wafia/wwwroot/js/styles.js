@@ -4,7 +4,7 @@ function BuildStyle(parentStyle, childStyle) {
 
 
 export const BodyStyle = {
-    "backgroundColor": "#F2F1E1"
+    backgroundColor: "#F2F1E1"
 }
 
 export const LogInButtonStyle = {
@@ -15,7 +15,7 @@ export const LogInButtonStyle = {
     top: "0px",
 
     border: "0",
-    "backgroundColor": "#E94C8D"
+    backgroundColor: "#E94C8D"
 }
 
 export const AboutButtonStyle = {
@@ -86,23 +86,44 @@ export const WarningTextStyle = {
     "fontSize": "20px",
     "lineHeight": "34px",
 
-    "color": "#FF0000",
+    "color": "#FF0000"
 }
 
-export const SearchButtonStyle = {
-    "position": "absolute",
-    "width": "15vw",
-    "height": "10vh",
-    "left": "10vw",
-    "top": "76vh",
 
-    "border": "0",
-    "background": "#E94C8D",
+const MenuButtonStyle = {
+    position: "absolute",
+    border: "0",
+    background: "#E94C8D",
 
-    "boxShadow": "0px 8px 8px rgba(0, 0, 0, 0.5)",
-    "filter": "blur(0.5px)",
-    "borderRadius": "15px"
+    boxShadow: "0px 8px 8px rgba(0, 0, 0, 0.5)",
+    filter: "blur(0.5px)",
+    borderRadius: "15px"
 }
+
+export const SearchButtonStyle = BuildStyle(MenuButtonStyle, {
+    width: "15vw",
+    height: "10vh",
+    left: "10vw",
+    top: "76vh",
+});
+
+const PersonalAreaButtonStyle = BuildStyle(MenuButtonStyle, {
+    width: "17vw",
+    height: "8vh"
+});
+
+export const UpdateDatabaseButton = BuildStyle(PersonalAreaButtonStyle, {
+    left: "50%",
+    top: "20%",
+    transform: "translate(-50%, -50%)"
+});
+
+export const GiveRightsButton = BuildStyle(PersonalAreaButtonStyle, {
+    left: "50%",
+    top: "85%",
+    transform: "translate(-50%, -50%)"
+});
+
 
 export const HeaderStyle = {
     position: "relative",
@@ -139,7 +160,7 @@ export const PopUpWindowStyle = {
     "top": "50%",
     "left": "50%",
     "transform": "translate(-50%, -50%)",
-    "boxShadow": "0px 8px 8px rgba(0, 0, 0, 0.5)",
+    "boxShadow": "0px 8px 8px rgba(0, 0, 0, 0.5)"
 }
 
 export const PopUpHeaderTextStyle = {
@@ -152,16 +173,34 @@ export const PopUpHeaderTextStyle = {
     "textAlign": "center",
     "top": "10%",
 
-    "color": "#000000",
+    "color": "#000000"
+}
+
+export const UserLoginTextStyle = {
+    position: "relative",
+    top: "-50%",
+    transform: "translate(-1%, -50%)",
+    fontSize: "24px",
+    textAlign: "right",
+
+    color: "#FFFFFF"
+}
+
+export const PesonalAreaBordersStyle = {
+    position: "relative",
+    left: "50%",
+    transform: "translate(-50%, 0%)",
+    width: "33vw",
+    height: "91vh",
 }
 
 const InputButton = {
-    "position" : "relative",
-    "left": "50%",
-    "transform": "translate(-50%, 0%)",
-    "borderRadius": "7px",
-    "width": "25vw",
-    "height": "5vh"
+    position : "relative",
+    left: "50%",
+    transform: "translate(-50%, 0%)",
+    borderRadius: "7px",
+    width: "25vw",
+    height: "5vh"
 }
 
 export const LogInFieldLoginStyle = BuildStyle(InputButton, {
@@ -183,3 +222,19 @@ export const SignUpFieldPasswordStyle = BuildStyle(InputButton, {
 export const SignUpFieldRepeatPasswordStyle = BuildStyle(InputButton, {
     top: "35%"
 });
+
+
+export const HistoryFieldStyle = {
+    position: "absolute",
+    left: "5vw",
+    top: "10%",
+    transform: "scale(0.75)"
+}
+
+export const DeleteFromHistoryButtonStyle = {
+    position: "relative",
+    left: "-15%",
+    backgroundColor: "#FFFFFF",
+    border: "none",
+    transform: "scale(0.90)"
+}
