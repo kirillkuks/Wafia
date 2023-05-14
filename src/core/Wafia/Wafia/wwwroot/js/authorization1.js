@@ -43,11 +43,11 @@ class Authorization extends React.Component {
 
     renderLogInButton() {
         return <button
-                onClick={this.logInButtonOnClick()}
-                type="button"
-                style={styles.LogInButtonStyle}>
-                    { this.logInButtonOutputString() }
-                </button>
+            onClick={this.logInButtonOnClick()}
+            type="button"
+            style={styles.LogInButtonStyle}>
+            {this.logInButtonOutputString()}
+        </button>
     }
 
 
@@ -79,7 +79,7 @@ class Authorization extends React.Component {
                             method: "GET",
                             headers: { "Accept": "application/json" }
                         });
-                
+
                         if (response.ok) {
                             window.location.assign("https://www.youtube.com/watch?v=ywthKNqI7uI");
                         }

@@ -1,8 +1,6 @@
-using System.Security.Principal;
-using System.Xml.Linq;
 using WAFIA.Database;
-using WAFIA.Database.Connectors;
 using WAFIA.Database.Types;
+using WAFIA.Database.Connectors;
 
 namespace Test
 {

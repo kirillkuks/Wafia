@@ -11,11 +11,9 @@ src/package-lock.json
 
 /src/core/Wafia/Wafia/node_modules
 
-/src/core/Wafia/Database/bin
-/src/core/Wafia/Database/obj
-/src/core/Wafia/Database/connection_data.txt
-
 /src/core/Wafia/Test/bin
 /src/core/Wafia/Test/obj
 
 /src/core/Wafia/TestResults/
+
+/src/core/Wafia/Wafia/connection_data.txt
