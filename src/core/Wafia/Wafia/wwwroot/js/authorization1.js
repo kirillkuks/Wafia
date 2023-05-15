@@ -2,11 +2,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "../css/reset.css";
+import "../css/leaflet.css";
 
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
 import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
 import LogInWindowPopUpCreaterComponent from "./logInPopUp.js";
+
+import markerIconPng from "../img/marker-icon.png";
+import { Icon } from "leaflet";
 
 
 class Authorization extends LogInWindowPopUpCreaterComponent {
@@ -85,8 +89,25 @@ class Authorization extends LogInWindowPopUpCreaterComponent {
                     <p style={styles.ButtonTextStyle}>Search</p>
                 </button>
                 <section style={styles.InterctiveMapStyle}>
+                    <MapContainer
+                        center={[60.00732, 30.37289]}
+                        zoom={13}
+                        style={{ width: '59wh', height: '63vh' }}>
+                          <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+                        <Marker
+                            position={[60.00732, 30.37289]}
+                            icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+                            <Popup>
+                                {"Polytech :)"}
+                            </Popup>
+                        </Marker>
+                    </MapContainer>
                 </section>
-                {super.render()}
+                <div>
+                    {super.render()}
+                </div>
             </main>
         );
     }
@@ -113,20 +134,6 @@ class Authorization extends LogInWindowPopUpCreaterComponent {
             { this.renderMain() }
         </div>
         );
-
-        // return (
-        //     <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
-        //         <TileLayer
-        //             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        //             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        //         />
-        //         <Marker position={[51.505, -0.09]}>
-        //             <Popup>
-        //             A pretty CSS3 popup. <br /> Easily customizable.
-        //             </Popup>
-        //         </Marker>
-        //     </MapContainer>
-        // );
     }
 }
 
