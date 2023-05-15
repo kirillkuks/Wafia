@@ -186,6 +186,23 @@ export const UserLoginTextStyle = {
     color: "#FFFFFF"
 }
 
+export const AboutTextStyle = {
+    "position": "absolute",
+    "fontFamily": 'Inter',
+    "fontStyle": "normal",
+    "fontWeight": "500",
+    "fontSize": "24px",
+    "lineHeight": "46px",
+    "textAlign": "center",
+
+    "top": "15%",
+    "left": "25%",
+    "width": "50%",
+    "height": "70%",
+
+    "color": "#000000"
+}
+
 export const PesonalAreaBordersStyle = {
     position: "relative",
     left: "50%",

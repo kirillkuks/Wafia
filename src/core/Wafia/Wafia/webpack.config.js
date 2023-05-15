@@ -41,7 +41,16 @@ let personalArea = Object.assign({}, config, {
     }
 });
 
+let about = Object.assign({}, config, {
+    entry: './wwwroot/js/about.js',
+    output: {
+        path: path.join(__dirname, "/wwwroot/dst"),
+        filename: "about.js"
+    }
+});
+
 module.exports = [
     guestScreen,
-    personalArea
+    personalArea,
+    about
 ];
