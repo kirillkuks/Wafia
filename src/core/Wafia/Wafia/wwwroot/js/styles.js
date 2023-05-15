@@ -153,6 +153,7 @@ export const InterctiveMapStyle = {
 
 export const PopUpWindowStyle = {
     "position": "absolute",
+    "z-index": "100000",
     "width": "40vw",
     "height": "60vh",
     "borderRadius": "20px",
