@@ -14,7 +14,7 @@ class PersonalArea extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            userRight: EUserRight.kGuest,
+            userRight: null,
             userLogin: ""
         };
     }
@@ -51,7 +51,9 @@ class PersonalArea extends React.Component {
                     <h1>Web Application For Infrastructure Analyze</h1>
                 </div>
 
-                <a href={EHtmlPages.kGuestScreen}>
+                <a
+                    href={EHtmlPages.kGuestScreen}
+                    style={styles.BackToGuestScreenButtonStyle}>
                     <img src="../img/backToGuestScreen.png"></img>
                 </a>
 

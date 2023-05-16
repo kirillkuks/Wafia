@@ -9,8 +9,8 @@ import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
 import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
 import LogInWindowPopUpCreaterComponent from "./logInPopUp.js";
 
-import markerIconPng from "../img/marker-icon.png";
-import { Icon } from "leaflet";
+import * as MapFeature from "./mapFeatures.js";
+import { PersonalAreaRedirectButton } from "./common.js";
 
 
 class Authorization extends LogInWindowPopUpCreaterComponent {
@@ -21,26 +21,20 @@ class Authorization extends LogInWindowPopUpCreaterComponent {
         };
     }
 
-    logInButtonOutputString() {
-        console.log(this.state.userRight);
-
+    renderLogInButton() {
         if (this.state.userRight === EUserRight.kGuest) {
-            return <p style={styles.ButtonTextStyle}>Log In</p>
-        } else {
-            return <p style={styles.ButtonTextStyle}>Personal Area</p>
-        }
-    }
-
-    logInButtonOnClick() {
-        if (this.state.userRight === EUserRight.kGuest) {
-            return () => {
-                super.setState({ screenState: EScreenState.kLogIn })
-            }
+            return (
+                <button
+                    onClick={() => {
+                        super.setState({ screenState: EScreenState.kLogIn });
+                    }}
+                    type="button"
+                    style={styles.LogInButtonStyle}>
+                    <p style={styles.ButtonTextStyle}>Log In</p>
+                </button>)
         }
 
-        return () => {
-            window.location.assign(EHtmlPages.kPersonalArea);
-        }
+        return PersonalAreaRedirectButton();
     }
 
     renderLogInButton() {
@@ -51,7 +45,6 @@ class Authorization extends LogInWindowPopUpCreaterComponent {
             {this.logInButtonOutputString()}
         </button>
     }
-
 
     renderHeader() {
         return (
@@ -98,11 +91,12 @@ class Authorization extends LogInWindowPopUpCreaterComponent {
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
                         <Marker
                             position={[60.00732, 30.37289]}
-                            icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+                            icon={MapFeature.DefaultMarkerIcon()}>
                             <Popup>
                                 {"Polytech :)"}
                             </Popup>
                         </Marker>
+                        <MapFeature.FindLocation />
                     </MapContainer>
                 </section>
                 <div>
