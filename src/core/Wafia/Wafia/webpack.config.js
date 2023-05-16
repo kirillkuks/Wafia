@@ -20,20 +20,25 @@ let config = {
             loader: "url-loader",
             options: { limit: false },
         },
+        {
+            test: /\.m?js$/,
+            enforce: 'pre',
+            use: ['source-map-loader'],
+        },
         ],
     },
 }
 
 
-let guestScreen = Object.assign({}, config, {
+const guestScreen = Object.assign({}, config, {
     entry: './wwwroot/js/authorization1.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),
-        filename: "authorization1.js",
+        filename: "authorization.js"
     }
 });
 
-let personalArea = Object.assign({}, config, {
+const personalArea = Object.assign({}, config, {
     entry: './wwwroot/js/personalArea.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),
@@ -41,7 +46,17 @@ let personalArea = Object.assign({}, config, {
     }
 });
 
+const search = Object.assign({}, config, {
+    entry: './wwwroot/js/search.js',
+    output: {
+        path: path.join(__dirname, "/wwwroot/dst"),
+        filename: "search.js"
+    }
+});
+
+
 module.exports = [
     guestScreen,
-    personalArea
+    personalArea,
+    search
 ];

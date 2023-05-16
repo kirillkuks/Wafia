@@ -178,8 +178,9 @@ export const PopUpHeaderTextStyle = {
 }
 
 export const UserLoginTextStyle = {
-    position: "relative",
-    top: "-50%",
+    position: "absolute",
+    top: "44px",
+    right: "1vw",
     transform: "translate(-1%, -50%)",
     fontSize: "24px",
     textAlign: "right",
@@ -238,4 +239,34 @@ export const DeleteFromHistoryButtonStyle = {
     backgroundColor: "#FFFFFF",
     border: "none",
     transform: "scale(0.90)"
+}
+
+export const PersonalAreaButtonIconStyle = {
+    position: "absolute",
+    width: "85px",
+    height: "85px",
+    right: "0px",
+    top: "0px",
+    border: "none",
+    background: "none"
+}
+
+export const BackToGuestScreenButtonStyle = {
+    position: "absolute",
+    width: "85px",
+    height: "85px",
+    left: "0px",
+    top: "0px",
+    boredr: "none",
+    background: "none"
+}
+
+export const SearchParamsBackgroundStyle = {
+    position: "absolute",
+    left: "0px",
+    top: "85px",
+    width: "25vw",
+    height: "calc(100vh - 85px)",
+    backgroundColor: "#D9F2E2",
+    borderRight: "2px solid",
 }

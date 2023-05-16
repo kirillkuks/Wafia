@@ -1,3 +1,6 @@
+import React from "react";
+import * as styles from "./styles.js"
+
 export const EScreenState = {
     kIdle: 0,
     kLogIn: 1,
@@ -20,3 +23,17 @@ export const ClientConsts = {
     kMaxLoginLength: 50,
     kMaxPasswordLength: 20
 };
+
+
+export function PersonalAreaRedirectButton() {
+    return (
+        <button
+            onClick={() => {
+                window.location.assign(EHtmlPages.kPersonalArea);
+            }}
+            type="button"
+            style={styles.PersonalAreaButtonIconStyle}>
+            <img src={"../img/personalArea.png"}></img>
+        </button>
+    )
+}
