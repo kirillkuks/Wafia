@@ -25,6 +25,14 @@ export const ClientConsts = {
 };
 
 
+export const InfrastructureElementPriority = [
+    "None",
+    "Minor",
+    "Middle",
+    "Major"
+];
+
+
 export function PersonalAreaRedirectButton() {
     return (
         <button

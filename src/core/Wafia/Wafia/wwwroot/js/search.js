@@ -1,24 +1,57 @@
 'use strict';
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { Dropdown } from "react-bootstrap";
+import { Dropdown, Row, Col } from "react-bootstrap";
+import { Form } from "react-bootstrap";
+
+import RangeSlider from 'react-bootstrap-range-slider';
 
 import "../css/reset.css";
 import "../css/leaflet.css";
 import "../css/bootstrap/bootstrap.min.css";
+import "../css/bootstrap/bootstrap.css";
+import "../css/bootstrap/react-bootstrap-range-slider.css";
+import "../css/app.css";
 
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
 import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
 
-import { PersonalAreaRedirectButton } from "./common.js";
+import * as MapFeature from "./mapFeatures.js";
+import { PersonalAreaRedirectButton, InfrastructureElementPriority } from "./common.js";
 
 
 const AllCities = [
-    "Saint-Petersburg",
-    "Moscow",
-    "Kaliningrad"
+    {
+        name: "Saint-Petersburg",
+        lat: 59.95001,
+        lon: 30.31661
+    },
+    {
+        name: "Moscow",
+        lat: 55.75583,
+        lon: 37.61778
+    },
+    {
+        name: "Kaliningrad",
+        lat: 54.71666,
+        lon: 20.49991
+    }
 ];
+
+const AllCountries = [
+    "Russia"
+];
+
+const AllElements = [
+    "School",
+    "Hospital",
+    "Underground",
+    "Mall",
+    "Unifersity",
+    "Church",
+    "Pharmacy"
+]
 
 
 class Search extends React.Component {
@@ -28,7 +61,12 @@ class Search extends React.Component {
             userRight: null,
             userLogin: "",
             showMapOptions: false,
-            activeCity: ""
+            activeCity: "",
+            activeCountry: "",
+            activeLat: 54.5920,
+            activeLon: 22.2013,
+
+            elementsPriority: Array.apply(null, Array(AllElements.length)).map(function () { return 0; })
         }
     }
 
@@ -83,42 +121,198 @@ class Search extends React.Component {
     }
 
     renderMap() {
+        console.log("active coords: " + this.state.activeLat + " | " + this.state.activeLon);
+
         return (
             <section style={styles.InterctiveMapStyle}>
                 <MapContainer
-                    center={[54.5920, 22.2013]}
+                    center={[this.state.activeLat, this.state.activeLon]}
                     zoom={13}
                     style={{ width: '59wh', height: '63vh' }}>
                         <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+                        <MapFeature.MoveTo lat={this.state.activeLat} lon={this.state.activeLon} />
                 </MapContainer>
             </section>
         );
     }
 
     renderSearchParams() {
-        return AllCities.length == 0 ? null : (
+        return (
             <div style={styles.SearchParamsBackgroundStyle}>
-                    <Dropdown>
-                        <Dropdown.Toggle variant="success" id="cityDropdown">
-                            {this.state.activeCity === "" ? "City" : this.state.activeCity}
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                            {AllCities.map(
-                                (city) => (
-                                    <Dropdown.Item onClick={() => {
-                                        this.setState({activeCity: city})
-                                    }}>
-                                        {city}
-                                    </Dropdown.Item>
-                                )
-                            )}
-                        </Dropdown.Menu>
-                    </Dropdown>
+                {this.renderAreaSearchParams()}
+                {this.renderSpecificObjects()}
+                {this.renderElementsManageParams()}
+                {this.renderSearchManageButtons()}
             </div>
         );
+    }
+
+    renderAreaSearchParams() {
+        return (
+            <div>
+                <h1 style={styles.AreaParamsHelperTextSyle}>Search Area</h1>
+                {this.renderDropdown(
+                    this.state.activeCountry === "" ? "Country" : this.state.activeCountry,
+                    "2vh",
+                    AllCountries.map(
+                        (country) => (
+                            <Dropdown.Item onClick={() => {
+                                this.setState({activeCountry: country})
+                            }}>
+                                {country}
+                            </Dropdown.Item>
+                        )
+                    ).concat(
+                        [<Dropdown.Divider />,
+                        <Dropdown.Item onClick={() => {
+                            this.setState({activeCountry: ""})
+                        }}>
+                            Reset
+                        </Dropdown.Item>]
+                    )
+                )}
+                {this.renderDropdown(
+                    this.state.activeCity === "" ? "City" : this.state.activeCity,
+                    "6vh",
+                    AllCities.map(
+                        (city) => (
+                            <Dropdown.Item onClick={() => {
+                                this.setState({
+                                    activeCity: city.name,
+                                    activeLat: city.lat,
+                                    activeLon: city.lon
+                                });
+                            }}>
+                                {city.name}
+                            </Dropdown.Item>
+                        )
+                    ).concat(
+                        [<Dropdown.Divider />,
+                        <Dropdown.Item onClick={() => {
+                            this.setState({activeCity: ""})
+                        }}>
+                            Reset
+                        </Dropdown.Item>]
+                    )
+                )}
+            </div>
+        );
+    }
+
+    renderSpecificObjects() {
+        return (
+            <div style={styles.SpecificObjectParamsStyle}>
+
+            </div>
+        )
+    }
+
+    renderElementsManageParams() {
+        return (
+            <div>
+                <h1 style={styles.InfrastructureElementsHelperTextStyle}>Infrastructure elements</h1>
+                <div style={styles.InfrastructureElementsListStyle}>
+                    {this.renderElementParamPriority()}
+                </div>
+            </div>
+        );
+    }
+
+    renderSearchManageButtons() {
+        return (
+            <div>
+                <button
+                    type="button"
+                    style={styles.SearchManageSearchButton}
+                    onClick={() => {
+                        console.log(this.state.elementsPriority);
+                    }}>
+                    <p style={styles.ButtonTextStyle}>Search</p>
+                </button>
+                <button
+                    type="button"
+                    style={styles.SearchManageSaveButton}>
+                    <p style={styles.ButtonTextStyle}>Save</p>
+                </button>
+                <button
+                    type="button"
+                    style={styles.SearchManageMapOptionsButton}>
+                    <p style={styles.ButtonTextStyle}>Map options</p>
+                </button>
+            </div>
+        );
+    }
+
+    renderDropdown(toggleString, top, items) {
+        return (
+            <div style={{position: "absolute", left: "2vw", top: top, width: "20vw", height: "4vh"}}>
+                <Dropdown>
+                    <Dropdown.Toggle
+                        variant="success"
+                        id="cityDropdown">
+                        {toggleString}
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                        {items}
+                    </Dropdown.Menu>
+                </Dropdown>
+            </div>
+        );
+    }
+
+    renderElementParamPriority() {
+        function calcHelperTextStyle(idx) {
+            let topStr = (7 * idx + 1).toString() + "vh";
+
+            return Object.assign({}, styles.InfrastructureElementNameStyle, {
+                top: topStr
+            });
+        }
+
+        function calcRangeStyle(idx) {
+            let topStr = (7 * idx + 4).toString() + "vh";
+
+            return Object.assign({}, styles.InfrastructureElementPriorityStyle, {
+                top: topStr
+            });
+        }
+
+        return (
+            <div>
+            {AllElements.map((element, idx) => (
+                <div>
+                    <h1 style={calcHelperTextStyle(idx)}>{element}</h1>
+                    <div style={calcRangeStyle(idx)}>
+                    <Form>
+                        <Form.Group as={Row}>
+                            <Col xs="9">
+                                <RangeSlider
+                                    value={this.state.elementsPriority[idx]}
+                                    min={0}
+                                    max={InfrastructureElementPriority.length - 1}
+                                    onChange={e => this.setState({elementsPriority: this.state.elementsPriority.map((c, i) => {
+                                        if (i === idx) {
+                                            return Number(e.target.value);
+                                        }
+                                        else {
+                                            return c;
+                                        }
+                                    })})}
+                                />
+                            </Col>
+                            <Col xs="3">
+                                <Form.Control value={InfrastructureElementPriority[this.state.elementsPriority[idx]]} />
+                            </Col>
+                        </Form.Group>
+                    </Form>
+                    </div>
+                </div>
+            ))}
+            </div>
+        )
     }
 }
 
