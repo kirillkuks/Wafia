@@ -1,5 +1,5 @@
 import React from "react";
-import { Marker, Popup, useMapEvents } from "react-leaflet";
+import { Marker, Popup, useMap, useMapEvents } from "react-leaflet";
 
 import markerIconPng from "../img/marker-icon.png";
 import { Icon } from "leaflet";
@@ -29,4 +29,15 @@ export function FindLocation() {
             <Popup>You are here</Popup>
         </Marker>
     );
+}
+
+export function MoveTo({lat, lon}) {
+    const map = useMapEvents({
+        click: () => {
+            console.log("prikol" + lat + " | " + lon);
+            map.flyTo([lat, lon], map.getZoom());
+        }
+    });
+
+    return null;
 }

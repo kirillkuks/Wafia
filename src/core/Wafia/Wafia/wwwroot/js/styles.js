@@ -270,3 +270,103 @@ export const SearchParamsBackgroundStyle = {
     backgroundColor: "#D9F2E2",
     borderRight: "2px solid",
 }
+
+
+const HelperTextStyle = {
+    position: "absolute",
+    fontFamily: "Inter",
+    fontStyle: "Italic",
+    fontSize: "12px",
+    fontWeight: "200",
+    lineHeight: "15px",
+    textAlign: "left",
+    color: "#000000",
+    width: "24vw",
+    height: "2vh",
+    left: "1vw"
+}
+
+export const AreaParamsHelperTextSyle = BuildStyle(HelperTextStyle, {
+    top: "0vh"
+});
+
+export const InfrastructureElementsHelperTextStyle = BuildStyle(HelperTextStyle, {
+    top: "29vh"
+});
+
+
+const SearchManageButton = {
+    position: "absolute",
+    border: "0",
+    background: "#E94C8D",
+    boxShadow: "0px 8px 8px rgba(0, 0, 0, 0.5)",
+    filter: "blur(0.5px)",
+    borderRadius: "15px"
+}
+
+export const SearchManageSearchButton = BuildStyle(SearchManageButton, {
+    left: "5%",
+    right: "65.83%",
+    top: "88.44%",
+    bottom: "3.95%"
+});
+
+export const SearchManageSaveButton = BuildStyle(SearchManageButton, {
+    left: "65.83%",
+    right: "5%",
+    top: "88.44%",
+    bottom: "3.95%"
+});
+
+export const SearchManageMapOptionsButton = BuildStyle(SearchManageButton, {
+    left: "29.17%",
+    right: "29.17%",
+    top: "79.7%",
+    bottom: "15.28%"
+});
+
+
+export const InfrastructureElementsListStyle = {
+    position: "absolute",
+    left: "0vw",
+    top: "31vh",
+    width: "calc(25vw - 1px)",
+    height: "41vh",
+    overflowY: "scroll",
+    overflowX: "clip"
+}
+
+export const InfrastructureElementPriorityStyle = {
+    position: "absolute",
+    width: "21vw",
+    height: "2vh",
+    left: "1vw",
+}
+
+export const InfrastructureElementNameStyle = {
+    position: "absolute",
+    width: "21vw",
+    height: "4vh",
+    left: "1vw",
+
+    fontFamily: "Inter",
+    fontStyle: "normal",
+    fontWeight: "400",
+    fontSize: "28px",
+    lineHeight: "34px",
+    display: "flex",
+    alignItems: "center",
+
+    color: "#000000",
+}
+
+
+export const SpecificObjectParamsStyle = {
+    position: "absolute",
+    top: "15vh",
+    left: "0vw",
+    width: "25vw",
+    height: "13vh",
+
+    backgroundColor: "#FF0000"
+}
