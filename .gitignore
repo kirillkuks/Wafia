@@ -17,3 +17,4 @@ src/package-lock.json
 /src/core/Wafia/TestResults/
 
 /src/core/Wafia/Wafia/connection_data.txt
+/src/core/Wafia/Test/connection_data.txt

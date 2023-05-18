@@ -1,6 +1,4 @@
-﻿using System.Net.Mail;
-
-namespace WAFIA.Database.Types
+﻿namespace WAFIA.Database.Types
 {
     public class Account
     {

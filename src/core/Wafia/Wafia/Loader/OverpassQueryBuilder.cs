@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-using WAFIA.Database;
-using WAFIA.Database.Types;
+﻿using WAFIA.Database.Types;
 
 namespace WAFIA.Loader
 {

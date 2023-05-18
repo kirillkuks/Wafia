@@ -1,6 +1,6 @@
 ﻿using NpgsqlTypes;
 
-namespace WAFIA.Database {
+namespace WAFIA.Database.Types {
 
     using Polygon = NpgsqlPolygon;
 
@@ -24,7 +24,6 @@ namespace WAFIA.Database {
         public long Account { get; set; }
         public Polygon? Border { get; set; }
         public List<Parameter> Parameters { get; set; }
-
         public long Country { get; set; }
         public long? City { get; set; }
         public DateTime Date { get; set; }

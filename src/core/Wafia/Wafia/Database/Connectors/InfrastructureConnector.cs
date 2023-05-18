@@ -1,6 +1,9 @@
 ﻿using Npgsql;
+using NpgsqlTypes;
+using WAFIA.Database.Types;
 
-namespace WAFIA.Database {
+namespace WAFIA.Database.Connectors {
+    using Point = NpgsqlPoint;
     public class InfrastructureConnector {
         public InfrastructureConnector(NpgsqlConnector connector) {
             cmd = connector.Cmd;
@@ -35,7 +38,6 @@ namespace WAFIA.Database {
             }
             return true;
         }
-
         public async Task<bool> AddObject(InfrastructureObject obj) {
             string selectStart = "INSERT INTO infrastructure_object (coordinates, name, infrastructure_element, city";
             string selectEnd = " VALUES (@Coordinates, @Name, @InfrElement, @City";
@@ -100,6 +102,146 @@ namespace WAFIA.Database {
             }
             cmd.Parameters.Clear();
             return true;
+        }
+        public async Task<InfrastructureObject?> GetObject(string name, Point coord) {
+            cmd.CommandText = "SELECT id, street, website, opening_hours, infrastructure_element, city, " +
+                $"house, phone FROM infrastructure_object WHERE name='{name}' and coord='{coord}'";
+
+            NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+            try {
+                if (await reader.ReadAsync()) {
+                    var obj = new InfrastructureObject(
+                        (long)reader["id"],
+                        coord,
+                        (InfrastructureElement)(long)reader["infrastructure_element"],
+                        name,
+                        (long)reader["city"]) {
+                        Phone = (string)reader["phone"],
+                        Street = (string)reader["street"],
+                        Website = (string)reader["website"],
+                        OpeningHours = (string)reader["opening_hours"],
+                        House = (string)reader["house"]
+                    };
+                    reader.Close();
+                    return obj;
+                }
+                else {
+                    reader.Close();
+                    return null;
+                }
+            }
+            catch {
+                reader.Close();
+                return null;
+            }
+        }
+        public async Task<bool> DeleteObjects(City city) {
+            cmd.CommandText = $"DELETE  FROM infrastracture_object WHERE city='{city.Id}'";
+            try {
+                if (await cmd.ExecuteNonQueryAsync() != 0) {
+                    return true;
+                };
+                return false;
+            }
+            catch {
+                return false;
+            }
+        }
+        public async Task<bool> DeleteObjects(Country country) {
+            cmd.CommandText = $"DELETE  FROM infrastracture_object WHERE city IN" +
+                $"(SELECT id FROM city WHERE country='{country.Id}')";
+            try {
+                if (await cmd.ExecuteNonQueryAsync() != 0) {
+                    return true;
+                };
+                return false;
+            }
+            catch {
+                return false;
+            }
+        }
+        public async Task<bool> DeleteObject(long id) {
+            cmd.CommandText = $"DELETE  FROM infrastracture_object WHERE id='{id}'";
+            try {
+                if (await cmd.ExecuteNonQueryAsync() != 0) {
+                    return true;
+                };
+                return false;
+            }
+            catch {
+                return false;
+            }
+        }
+        public async Task<bool> UpdateObject(InfrastructureObject obj) {
+            if (obj.Id == 0) {
+                return false;
+            }
+
+            cmd.CommandText = $"UPDATE infrastracture_object" +
+                $" SET name='{obj.Name}'," +
+                $"street='{obj.Street}', " +
+                $"website='{obj.Website}'" +
+                $"opening_hours='{obj.OpeningHours}'" +
+                $"infrastructure_element='{(long)obj.InfrElem}'" +
+                $"house='{obj.House}'" +
+                $"phone='{obj.Phone}'" +
+                $"WHERE id = '{obj.Id}'";
+
+            try {
+                if (await cmd.ExecuteNonQueryAsync() != 0) {
+                    return true;
+                }
+                return false;
+            }
+            catch {
+                return false;
+            }
+        }
+        public async Task<List<InfrastructureObject>> Search(Request request) {
+
+            string cityIdText;
+            if (request.City != null) {
+                cityIdText = $"city = '{request.City}'";
+            }
+            else {
+                cityIdText = $"city IN (SELECT id FROM city WHERE country = '{request.Country}')";
+            }
+
+            if (request.Border != null) {
+                cmd.CommandText = $"SELECT id, coordinates, infrastructure_element, name, city FROM infrastructure_object " +
+                    $"WHERE {cityIdText} AND st_within(coordinates::geometry, @Border::geometry)";
+                cmd.Parameters.AddWithValue("Border", request.Border);
+            }
+            else {
+                cmd.CommandText = $"SELECT id, coordinates, infrastructure_element, name, city FROM infrastructure_object " +
+                    $"WHERE {cityIdText}";
+            }
+
+            NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+            cmd.Parameters.Clear();
+
+            List<InfrastructureObject> result = new();
+            try {
+                while (await reader.ReadAsync()) {
+                    InfrastructureObject ie = new
+                    (
+                        (long)reader["id"],
+                        (Point)reader["coordinates"],
+                        (InfrastructureElement)(long)reader["infrastructure_element"],
+                        (string)reader["name"],
+                        (long)reader["city"]
+                    );
+                    result.Add(ie);
+                }
+                reader.Close();
+                return result;
+            }
+            catch {
+                reader.Close();
+                return result;
+            }
         }
     }
 }

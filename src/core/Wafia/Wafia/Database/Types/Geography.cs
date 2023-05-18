@@ -1,4 +1,4 @@
-﻿namespace WAFIA.Database {
+﻿namespace WAFIA.Database.Types {
 
     public class Country {
         public long Id { get; set; }

@@ -1,5 +1,4 @@
 using WAFIA.Database;
-using WAFIA.Database.Connectors;
 
 System.Collections.Generic.SortedDictionary<string, int> activeUsers = new();
 
@@ -13,24 +12,11 @@ builder.Services.AddSession(options => {
 
 var app = builder.Build();
 
-NpgsqlConnector? nc;
-AccountConnector? ac = null;
-try {
-    if (!ConnParser.Parse("./connection_data.txt", out string? host,
-        out string? name, out string? password, out string? baseName)) {
-        nc = null;
-    }
-    else {
-        nc = new(host, name, password, baseName);
-    }
+Database? db = Database.Create("./connection_data.txt");
+if (db == null) {
+    Console.WriteLine("Incorrect connection data, database anactive");
 }
-catch (Exception ex) {
-    Console.WriteLine(ex.ToString());
-    nc = null;
-}
-if (nc != null) {
-    ac = new(nc);
-}
+
 
 
 async Task HandleRequest(HttpContext context) {
@@ -54,13 +40,13 @@ async Task HandleRequest(HttpContext context) {
         bool innerFail = false;
 
         if (loginData != null) {
-            if (ac == null) {
+            if (db == null) {
                 innerFail = true;
             }
             else {
-                var res = await ac.GetIdRights(loginData.Login, loginData.Password);
-                if (res != null) {
-                    context.Session.SetString("userId", res.Value.Key.ToString());
+                var res = await db.AC.Get(loginData.Login);
+                if (res != null && res.Password == loginData.Password) {
+                    context.Session.SetString("userId", res.Id.ToString());
                     userFound = true;
                 }
             }

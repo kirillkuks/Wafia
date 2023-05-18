@@ -1,6 +1,5 @@
 ﻿using NpgsqlTypes;
 using System.Globalization;
-using WAFIA.Database;
 using WAFIA.Database.Types;
 
 namespace WAFIA.Loader

@@ -1,7 +1,6 @@
 ﻿using NpgsqlTypes;
-using System.Xml.Linq;
 
-namespace WAFIA.Database {
+namespace WAFIA.Database.Types {
 
     using Point = NpgsqlPoint;
     public enum InfrastructureElement : long {
