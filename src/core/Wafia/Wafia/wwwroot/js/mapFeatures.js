@@ -31,26 +31,11 @@ export function FindLocation() {
     );
 }
 
-export function MoveTo({lat, lon}) {
-<<<<<<< HEAD
-    // const map = useMapEvents({
-    //     click: () => {
-    //         console.log("prikol" + lat + " | " + lon);
-    //         map.flyTo([lat, lon], map.getZoom());
-    //     }
-    // });
+export function MoveTo({ lat, lon }) {
 
     const map = useMap();
     console.log("prikol" + lat + " | " + lon);
     map.flyTo([lat, lon], map.getZoom());
-=======
-    const map = useMapEvents({
-        click: () => {
-            console.log("prikol" + lat + " | " + lon);
-            map.flyTo([lat, lon], map.getZoom());
-        }
-    });
->>>>>>> test
 
     return null;
 }

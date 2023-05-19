@@ -105,7 +105,7 @@ async Task HandleRequest(HttpContext context) {
             }
 
             if (!userFound) {
-                await db.AC.Add(new(0, loginData.Login, loginData.Mail, loginData.Password, false));
+                await db.AC.Add(new(0, loginData.Login, loginData.Login, loginData.Password, false)); //
                 context.Response.StatusCode = 200;
                 await context.Response.WriteAsJsonAsync(new { message = "ok" });
                 acc = await db.AC.Get(loginData.Login);
@@ -120,6 +120,17 @@ async Task HandleRequest(HttpContext context) {
             context.Response.StatusCode = 400;
             await context.Response.WriteAsJsonAsync(new { message = "invalid login or password" });
         }
+    }
+
+    else if (context.Request.Path == "/api/logout") {
+        context.Response.StatusCode = 200;
+        var userIdString = context.Session.GetString("userId");
+
+        if (userIdString != null) {
+            context.Session.Remove("userId");
+        }
+
+        await context.Response.WriteAsJsonAsync(new { message = "ok" });
     }
 
     else if (context.Request.Path == "/api/get_session_info") {

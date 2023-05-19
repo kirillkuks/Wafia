@@ -101,20 +101,11 @@ class PersonalArea extends React.Component {
             <div style={styles.HistoryFieldStyle}>
                 <img src="../img/historyField.png"></img>
                 <button
-<<<<<<< HEAD
                    style={styles.DeleteFromHistoryButtonStyle}
                    onClick={() => console.log("Delete from history")}>
                    <img src="../img/deleteFromHistory.png"></img>
                 </button>
             </div>
-            
-=======
-                    style={styles.DeleteFromHistoryButtonStyle}
-                    onClick={() => console.log("Delete from history")}>
-                    <img src="../img/deleteFromHistory.png"></img>
-                </button>
-            </div>
->>>>>>> test
         );
     }
 }
