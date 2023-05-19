@@ -2,7 +2,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "../css/reset.css";
-
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
 import LogInWindowPopUpCreaterComponent from "./logInPopUp.js";
@@ -55,10 +54,10 @@ class About extends LogInWindowPopUpCreaterComponent {
                     <h1>About</h1>
                 </div>
 
-                <a href={EHtmlPages.kGuestScreen}>
-                    <button style={styles.AboutButtonStyle}>
-                        <p style={styles.ButtonTextStyle}>Guest Screen</p>
-                    </button>
+                <a
+                    href={EHtmlPages.kGuestScreen}
+                    style={styles.BackToGuestScreenButtonStyle}>
+                    <img src="../img/backToGuestScreen.png"></img>
                 </a>
                 {this.renderLogInButton()}
             </header>

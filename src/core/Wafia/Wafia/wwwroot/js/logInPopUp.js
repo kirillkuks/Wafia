@@ -62,7 +62,9 @@ export default class LogInWindowPopUpCreaterComponent extends React.Component {
                             headers: { "Accept": "application/json", "Content-Type": "application/json" },
                             body: JSON.stringify({
                                 "Login": document.getElementById("LoginField").value,
+                                "Mail": "prikol",
                                 "Password": document.getElementById("PasswordField").value
+                                
                             })
                         });
                 
@@ -97,6 +99,12 @@ export default class LogInWindowPopUpCreaterComponent extends React.Component {
                 maxLength={ClientConsts.kMaxLoginLength}
                 style={styles.SignUpFieldLoginStyle}
                 id="SignUpLoginField"
+                placeholder="Login">
+                </input>
+                <input
+                maxLength={ClientConsts.kMaxLoginLength}
+                style={styles.SignUpFieldMailStyle}
+                id="SignUpMailField"
                 placeholder="Email">
                 </input>
                 <input
@@ -132,6 +140,7 @@ export default class LogInWindowPopUpCreaterComponent extends React.Component {
                                 headers: { "Accept": "application/json", "Content-Type": "application/json" },
                                 body: JSON.stringify({
                                     "Login": document.getElementById("SignUpLoginField").value,
+                                    "Mail": document.getElementById("SignUpMailField").value,
                                     "Password": password
                                 })
                             });
