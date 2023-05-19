@@ -145,6 +145,7 @@ export default class LogInWindowPopUpCreaterComponent extends React.Component {
                             });
                     
                             if (response.ok) {
+                                console.log("success sign up");
                                 const answer = await response.json();
                                 window.location.assign(EHtmlPages.kPersonalArea);
                             }

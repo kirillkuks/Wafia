@@ -179,13 +179,19 @@ export const PopUpHeaderTextStyle = {
 
 export const UserLoginTextStyle = {
     position: "absolute",
-    top: "44px",
-    right: "1vw",
-    transform: "translate(-1%, -50%)",
     fontSize: "24px",
+    fontFamily: "Inter",
     textAlign: "right",
+    transform: "translate(-100%, -25%)",
 
     color: "#FFFFFF"
+}
+
+export const UserLoginDropdownStyle = {
+    position: "absolute",
+    top: "50%",
+    right: "1vw",
+    transform: "translate(0%, -50%)",
 }
 
 export const AboutTextStyle = {
@@ -402,3 +408,44 @@ export const SpecificObjectParamsStyle = {
 
     backgroundColor: "#FF0000"
 }
+
+
+export const MapOptionsStyle = {
+    position: "absolute",
+    width: "min(24vh, 13vw)",
+    height: "min(24vh, 13vw)",
+    left: "80vw",
+    top: "24vh",
+
+    zIndex: "100000",
+    backgroundColor: "#FFFFFF",
+    border: "2px solid"
+}
+
+export const MapOptionsPointsStyle = {
+    position: "absolute",
+    left: "10.94%",
+    right: "10.94%",
+    top: "36.33%",
+    bottom: "50%"
+}
+
+const MapOptionsButtonStyle = {
+    position: "absolute",
+    left: "16.41%",
+    right: "16.41%",
+
+    filter: "blur(0.5px)",
+    borderRadius: "15px",
+    boxShadow: "0px 8px 8px rgba(0, 0, 0, 0.5)"
+}
+
+export const MapOptionsSubmitAreaStyle = BuildStyle(MapOptionsButtonStyle, {
+    top: "70.7%",
+    bottom: "11.72%",
+});
+
+export const MapOptionsResetAreaStyle = BuildStyle(MapOptionsButtonStyle, {
+    top: "9.38%",
+    bottom: "73.05%"
+});
