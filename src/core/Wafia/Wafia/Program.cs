@@ -47,9 +47,6 @@ if (db == null) {
 //    await db.IC.AddObject(obj);
 //}
 
-
-
-
 async Task HandleRequest(HttpContext context) {
     if (context.Request.Path == "/api/signIn") {
         context.Response.StatusCode = 200;
@@ -107,11 +104,12 @@ async Task HandleRequest(HttpContext context) {
 
             Account? ac = await db.AC.Get(id);
 
-        if (context.Session.Keys.Contains("userId")) {
-            await context.Response.WriteAsJsonAsync(new { state = "user" });
-        }
-        else {
-            await context.Response.WriteAsJsonAsync(new { state = "guest" });
+            if (context.Session.Keys.Contains("userId")) {
+                await context.Response.WriteAsJsonAsync(new { state = "user" });
+            }
+            else {
+                await context.Response.WriteAsJsonAsync(new { state = "guest" });
+            }
         }
     }
 
@@ -162,6 +160,7 @@ async Task HandleRequest(HttpContext context) {
         await context.Response.SendFileAsync("wwwroot/GuestScreen.html");
     }
 }
+
 
 
 app.UseStaticFiles();
