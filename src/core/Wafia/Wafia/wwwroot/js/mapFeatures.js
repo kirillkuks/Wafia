@@ -32,12 +32,16 @@ export function FindLocation() {
 }
 
 export function MoveTo({lat, lon}) {
-    const map = useMapEvents({
-        click: () => {
-            console.log("prikol" + lat + " | " + lon);
-            map.flyTo([lat, lon], map.getZoom());
-        }
-    });
+    // const map = useMapEvents({
+    //     click: () => {
+    //         console.log("prikol" + lat + " | " + lon);
+    //         map.flyTo([lat, lon], map.getZoom());
+    //     }
+    // });
+
+    const map = useMap();
+    console.log("prikol" + lat + " | " + lon);
+    map.flyTo([lat, lon], map.getZoom());
 
     return null;
 }

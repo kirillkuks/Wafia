@@ -8,10 +8,11 @@ import RangeSlider from 'react-bootstrap-range-slider';
 
 import "../css/reset.css";
 import "../css/leaflet.css";
-import "../css/bootstrap/bootstrap.min.css";
-import "../css/bootstrap/bootstrap.css";
-import "../css/bootstrap/react-bootstrap-range-slider.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.css"
+import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css"
 import "../css/app.css";
+
 
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
@@ -48,7 +49,7 @@ const AllElements = [
     "Hospital",
     "Underground",
     "Mall",
-    "Unifersity",
+    "University",
     "Church",
     "Pharmacy"
 ]
@@ -65,6 +66,7 @@ class Search extends React.Component {
             activeCountry: "",
             activeLat: 54.5920,
             activeLon: 22.2013,
+            requireFlyTo: false,
 
             elementsPriority: Array.apply(null, Array(AllElements.length)).map(function () { return 0; })
         }
@@ -84,12 +86,12 @@ class Search extends React.Component {
                 if (this.state.userRight != sessionInfo.user_rights)
                 {
                     console.log(sessionInfo.user_login);
-                    this.setState({userRight: sessionInfo.user_rights, userLogin: sessionInfo.user_login});
+                    this.setState({userRight: sessionInfo.user_rights, userLogin: sessionInfo.user_login, requireFlyTo: false});
                 }
             }
             else {
                 console.log("user status developer (debug only)");
-                this.setState({userRight: EUserRight.kAdmin, userLogin: "developer"});
+                this.setState({userRight: EUserRight.kAdmin, userLogin: "developer", requireFlyTo: false});
             }
         })();
 
@@ -132,7 +134,7 @@ class Search extends React.Component {
                         <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                        <MapFeature.MoveTo lat={this.state.activeLat} lon={this.state.activeLon} />
+                        {this.state.requireFlyTo ? <MapFeature.MoveTo lat={this.state.activeLat} lon={this.state.activeLon} /> :  null}
                 </MapContainer>
             </section>
         );
@@ -159,7 +161,7 @@ class Search extends React.Component {
                     AllCountries.map(
                         (country) => (
                             <Dropdown.Item onClick={() => {
-                                this.setState({activeCountry: country})
+                                this.setState({activeCountry: country, requireFlyTo: false})
                             }}>
                                 {country}
                             </Dropdown.Item>
@@ -167,7 +169,7 @@ class Search extends React.Component {
                     ).concat(
                         [<Dropdown.Divider />,
                         <Dropdown.Item onClick={() => {
-                            this.setState({activeCountry: ""})
+                            this.setState({activeCountry: "", requireFlyTo: false})
                         }}>
                             Reset
                         </Dropdown.Item>]
@@ -182,7 +184,8 @@ class Search extends React.Component {
                                 this.setState({
                                     activeCity: city.name,
                                     activeLat: city.lat,
-                                    activeLon: city.lon
+                                    activeLon: city.lon,
+                                    requireFlyTo: true
                                 });
                             }}>
                                 {city.name}
@@ -191,7 +194,7 @@ class Search extends React.Component {
                     ).concat(
                         [<Dropdown.Divider />,
                         <Dropdown.Item onClick={() => {
-                            this.setState({activeCity: ""})
+                            this.setState({activeCity: "", requireFlyTo: false})
                         }}>
                             Reset
                         </Dropdown.Item>]
@@ -300,7 +303,9 @@ class Search extends React.Component {
                                         else {
                                             return c;
                                         }
-                                    })})}
+                                    }),
+                                    requireFlyTo: false
+                                })}
                                 />
                             </Col>
                             <Col xs="3">
