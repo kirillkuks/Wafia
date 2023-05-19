@@ -41,31 +41,12 @@ if (db == null) {
 //res = await db.IC.AddInfrElement(InfrastructureElement.University.ToString());
 //res = await db.IC.AddInfrElement(InfrastructureElement.PlaceOfWorship.ToString());
 
-var spb = await db.GC.GetCity(507);
-var objs = await OverpassLoader.LoadInfrObjects(spb, InfrastructureElement.Healthcare);
-foreach (var obj in objs) {
-    await db.IC.AddObject(obj);
-}
+//var spb = await db.GC.GetCity(507);
+//var objs = await OverpassLoader.LoadInfrObjects(spb, InfrastructureElement.Healthcare);
+//foreach (var obj in objs) {
+//    await db.IC.AddObject(obj);
+//}
 
-objs = await OverpassLoader.LoadInfrObjects(spb, InfrastructureElement.Mall);
-foreach (var obj in objs) {
-    await db.IC.AddObject(obj);
-}
-
-objs = await OverpassLoader.LoadInfrObjects(spb, InfrastructureElement.Subway);
-foreach (var obj in objs) {
-    await db.IC.AddObject(obj);
-}
-
-objs = await OverpassLoader.LoadInfrObjects(spb, InfrastructureElement.University);
-foreach (var obj in objs) {
-    await db.IC.AddObject(obj);
-}
-
-objs = await OverpassLoader.LoadInfrObjects(spb, InfrastructureElement.PlaceOfWorship);
-foreach (var obj in objs) {
-    await db.IC.AddObject(obj);
-}
 
 
 
