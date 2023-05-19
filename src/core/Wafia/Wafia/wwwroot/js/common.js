@@ -15,8 +15,9 @@ export const EUserRight = {
 
 export const EHtmlPages = {
     kGuestScreen: "../GuestScreen.html",
-    kPersonalArea: "../PersonalArea1.html",
-    kAbout: "../About.html"
+    kPersonalArea: "../PersonalArea.html",
+    kAbout: "../About.html",
+    kSearchScreen: "../Search.html"
 };
 
 export const ClientConsts = {

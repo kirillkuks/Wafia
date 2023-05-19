@@ -16,7 +16,7 @@ import "../css/app.css";
 
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
-import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, Marker, Popup, Polygon } from "react-leaflet";
 
 import * as MapFeature from "./mapFeatures.js";
 import { PersonalAreaRedirectButton, InfrastructureElementPriority } from "./common.js";
@@ -67,6 +67,9 @@ class Search extends React.Component {
             activeLat: 54.5920,
             activeLon: 22.2013,
             requireFlyTo: false,
+            useMapOptions: false,
+            area: [],
+            drawArea: false,
 
             elementsPriority: Array.apply(null, Array(AllElements.length)).map(function () { return 0; })
         }
@@ -95,11 +98,14 @@ class Search extends React.Component {
             }
         })();
 
+        console.log("area: " + this.state.area[0]);
+
         return (
             <div>
                 {this.renderHeader()}
                 {this.renderMap()}
                 {this.renderSearchParams()}
+                {this.state.useMapOptions ? this.renderMapOptions() : null}
             </div>
         );
     }
@@ -135,6 +141,9 @@ class Search extends React.Component {
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
                         {this.state.requireFlyTo ? <MapFeature.MoveTo lat={this.state.activeLat} lon={this.state.activeLon} /> :  null}
+                        <MapFeature.ClickProcesser mapComp={this}/>
+                        {this.state.drawArea ?
+                            <Polygon pathOptions={{color: "purple"}} positions={this.state.area} /> : null}
                 </MapContainer>
             </section>
         );
@@ -241,10 +250,54 @@ class Search extends React.Component {
                 </button>
                 <button
                     type="button"
-                    style={styles.SearchManageMapOptionsButton}>
+                    style={styles.SearchManageMapOptionsButton}
+                    onClick={() => {
+                        this.setState({useMapOptions: !this.state.useMapOptions, requireFlyTo: false})
+                    }}>
                     <p style={styles.ButtonTextStyle}>Map options</p>
                 </button>
             </div>
+        );
+    }
+
+    renderMapOptions() {
+        function coordArrayToString(arr) {
+            let res = "";
+
+            arr.forEach(element => {
+                res += element[0].toFixed(2);
+                res += ","
+                res += element[1].toFixed(2);
+                res += ";"
+            });
+
+            return res;
+        }
+
+        return (
+        <div style={styles.MapOptionsStyle}>
+            <input
+                placeholder={coordArrayToString(this.state.area)}
+                style={styles.MapOptionsPointsStyle}
+                readOnly="readonly">
+            </input>
+            <button
+                type="button"
+                style={styles.MapOptionsSubmitAreaStyle}
+                onClick={() => {
+                    this.setState({drawArea: true, requireFlyTo: false})
+                }}>
+                Submit Area
+            </button>
+            <button
+                type="button"
+                style={styles.MapOptionsResetAreaStyle}
+                onClick={() => {
+                    this.setState({drawArea: false, area: [], requireFlyTo: false})
+                }}>
+                Reset Area
+            </button>
+        </div>
         );
     }
 
