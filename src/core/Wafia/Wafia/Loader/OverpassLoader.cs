@@ -141,10 +141,10 @@ namespace WAFIA.Loader
 
             List<Point> coords = new();
             for (int i = 0; i < names.Count; ++i) {
-                if (lats[i] != null || lons[i] != null) {
+                if (lats[i] == null || lons[i] == null) {
                     continue;
                 }
-                coords.Add(new((double)lats[i], (double)lons[i]));
+                coords.Add(new(lats[i].Value, lons[i].Value));
             }
 
             for (int i = 0; i < names.Count; ++i) {
@@ -162,6 +162,143 @@ namespace WAFIA.Loader
             return objs;
         }
 
+        static public async Task<List<Country>> LoadCountries() {
+            List<Country> countries = new();
+
+            if (httpClient == null) {
+                return countries;
+            }
+
+            var response = await httpClient.GetAsync(OQBuilder.GetCountryNameQuery());
+            List<string?> names = new();
+            if (!response.IsSuccessStatusCode) {
+                Console.WriteLine(response.StatusCode);
+            }
+            else {
+                string content = await response.Content.ReadAsStringAsync();
+                var namesStr = ParseStringTable(content);
+                if (namesStr.Count == 0) {
+                    return countries;
+                }
+                else {
+                    for (int i = 0; i < namesStr.Count; ++i) {
+                        names.Add(namesStr[i]);
+                    }
+                }
+            }
+            response.Dispose();
+
+            List<double?> lats = new(names.Count);
+            List<double?> lons = new(names.Count);
+
+            response = await httpClient.GetAsync(OQBuilder.GetCountryLatQuery());
+
+            if (!response.IsSuccessStatusCode) {
+                Console.WriteLine(response.StatusCode);
+            }
+            else {
+                string content = await response.Content.ReadAsStringAsync();
+                lats = ParseDoubleTable(content);
+            }
+            response.Dispose();
+
+            response = await httpClient.GetAsync(OQBuilder.GetCountryLonQuery());
+
+            if (!response.IsSuccessStatusCode) {
+                Console.WriteLine(response.StatusCode);
+            }
+            else {
+                string content = await response.Content.ReadAsStringAsync();
+                lons = ParseDoubleTable(content);
+            }
+            response.Dispose();
+
+            List<Point> coords = new();
+            for (int i = 0; i < names.Count; ++i) {
+                if (lats[i] == null || lons[i] == null) {
+                    continue;
+                }
+                coords.Add(new((double)lats[i], (double)lons[i]));
+            }
+
+            for (int i = 0; i < names.Count; ++i) {
+                if (names[i] == null) {
+                    continue;
+                }
+                countries.Add(new(0, names[i], coords[i]));
+            }
+
+            return countries;
+        }
+
+        static public async Task<List<City>> LoadCities(Country country) {
+            List<City> cities = new();
+
+            if (httpClient == null) {
+                return cities;
+            }
+
+            var response = await httpClient.GetAsync(OQBuilder.GetCityNameQuery(country));
+            List<string?> names = new();
+            if (!response.IsSuccessStatusCode) {
+                Console.WriteLine(response.StatusCode);
+            }
+            else {
+                string content = await response.Content.ReadAsStringAsync();
+                var namesStr = ParseStringTable(content);
+                if (namesStr.Count == 0) {
+                    return cities;
+                }
+                else {
+                    for (int i = 0; i < namesStr.Count; ++i) {
+                        names.Add(namesStr[i]);
+                    }
+                }
+            }
+            response.Dispose();
+
+            List<double?> lats = new(names.Count);
+            List<double?> lons = new(names.Count);
+
+            response = await httpClient.GetAsync(OQBuilder.GetCityLatQuery(country));
+
+            if (!response.IsSuccessStatusCode) {
+                Console.WriteLine(response.StatusCode);
+            }
+            else {
+                string content = await response.Content.ReadAsStringAsync();
+                lats = ParseDoubleTable(content);
+            }
+            response.Dispose();
+
+            response = await httpClient.GetAsync(OQBuilder.GetCityLonQuery(country));
+
+            if (!response.IsSuccessStatusCode) {
+                Console.WriteLine(response.StatusCode);
+            }
+            else {
+                string content = await response.Content.ReadAsStringAsync();
+                lons = ParseDoubleTable(content);
+            }
+            response.Dispose();
+
+            List<Point> coords = new();
+            for (int i = 0; i < names.Count; ++i) {
+                if (lats[i] == null || lons[i] == null) {
+                    continue;
+                }
+                coords.Add(new((double)lats[i], (double)lons[i]));
+            }
+
+            for (int i = 0; i < names.Count; ++i) {
+                if (names[i] == null) {
+                    continue;
+                }
+                cities.Add(new(0, names[i], country.Id ,coords[i]));
+            }
+
+            return cities;
+        }
         static private List<string?> ParseStringTable(string str) { 
             List<string?> result = new();
 

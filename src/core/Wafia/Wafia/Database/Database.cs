@@ -29,6 +29,7 @@ namespace WAFIA.Database {
         public AccountConnector AC { get; }
         public GeographyConnector GC { get; }
         public RequestConnector RC { get; }
+        public InfrastructureConnector IC { get; }
         public Connection Connection { get; }
         public Database(Connection connection) {
             Connection = connection;
@@ -37,6 +38,7 @@ namespace WAFIA.Database {
                 AC = new(nc);
                 GC = new(nc);
                 RC = new(nc);
+                IC = new(nc);
             }
             catch {
                 throw;

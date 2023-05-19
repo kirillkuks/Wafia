@@ -4,9 +4,14 @@ namespace WAFIA.Database.Types {
 
     using Point = NpgsqlPoint;
     public enum InfrastructureElement : long {
-        Healthcare = 38,
-        PlaceOfWorship = 41,
-        University = 40
+        Healthcare = 56,
+        University = 57,
+        PlaceOfWorship = 58,
+        School = 52,
+        FireStation = 51,
+        Police = 53,
+        Mall = 54,
+        Subway = 55
     }
     public class InfrastructureObject {
         public long Id { get; set; } = 0;
