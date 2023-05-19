@@ -2,6 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "../css/reset.css";
+
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
 import LogInWindowPopUpCreaterComponent from "./logInPopUp.js";
