@@ -29,6 +29,13 @@ let config = {
     },
 }
 
+let about = Object.assign({}, config, {
+    entry: './wwwroot/js/about.js',
+    output: {
+        path: path.join(__dirname, "/wwwroot/dst"),
+        filename: "about.js"
+    }
+});
 
 const guestScreen = Object.assign({}, config, {
     entry: './wwwroot/js/authorization1.js',
@@ -58,5 +65,6 @@ const search = Object.assign({}, config, {
 module.exports = [
     guestScreen,
     personalArea,
-    search
+    search,
+    about
 ];

@@ -1,9 +1,9 @@
 System.Collections.Generic.SortedDictionary<string, int> activeUsers = new();
 List<LoginData> users = new();
-users.Add(new LoginData("admin", "admin"));
-users.Add(new LoginData("Xst", "Xst"));
-users.Add(new LoginData("Tais", "Tais"));
-users.Add(new LoginData("kirillkuks", "kirillkuks"));
+users.Add(new LoginData("admin","admin", "admin"));
+users.Add(new LoginData("Xst", "Xst", "Xst"));
+users.Add(new LoginData("Tais", "Tais", "Tais"));
+users.Add(new LoginData("kirillkuks", "kirillkuks", "kirillkuks"));
 
 
 
@@ -83,6 +83,9 @@ async Task HandleRequest(HttpContext context)
             if (!userFound)
             {
                 users.Add(loginData);
+                context.Response.StatusCode = 200;
+                await context.Response.WriteAsJsonAsync(new { message = "ok" });
+                context.Session.SetInt32("userId", users.Count-1);
             }
             else
             {
@@ -172,13 +175,14 @@ class RedirectResponse
 
 class LoginData
 {
-    public LoginData(string login, string password)
+    public LoginData(string login, string mail, string password)
     {
         Login = login;
+        Mail = mail;
         Password = password;
     }
 
     public string Login { get; set; } = "";
+    public string Mail { get; set; } = "";
     public string Password { get; set; } = "";
 }
-

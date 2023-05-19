@@ -77,7 +77,7 @@ export const ButtonTextStyle = {
 
 export const WarningTextStyle = {
     "position": "absolute",
-    "top": "15%",
+    "top": "13%",
     "left": "19%",
     "transform": "translate(0%, +50%)",
     "fontFamily": 'Inter',
@@ -188,6 +188,23 @@ export const UserLoginTextStyle = {
     color: "#FFFFFF"
 }
 
+export const AboutTextStyle = {
+    "position": "absolute",
+    "fontFamily": 'Inter',
+    "fontStyle": "normal",
+    "fontWeight": "500",
+    "fontSize": "24px",
+    "lineHeight": "46px",
+    "textAlign": "center",
+
+    "top": "15%",
+    "left": "25%",
+    "width": "50%",
+    "height": "70%",
+
+    "color": "#000000"
+}
+
 export const PesonalAreaBordersStyle = {
     position: "relative",
     left: "50%",
@@ -214,15 +231,19 @@ export const PasswordFieldLoginStyle = BuildStyle(InputButton, {
 });
 
 export const SignUpFieldLoginStyle = BuildStyle(InputButton, {
-    top: "25%"
+    top: "17%"
+});
+
+export const SignUpFieldMailStyle = BuildStyle(InputButton, {
+    top: "20%"
 });
 
 export const SignUpFieldPasswordStyle = BuildStyle(InputButton, {
-    top: "30%"
+    top: "23%"
 });
 
 export const SignUpFieldRepeatPasswordStyle = BuildStyle(InputButton, {
-    top: "35%"
+    top: "26%"
 });
 
 
@@ -231,6 +252,17 @@ export const HistoryFieldStyle = {
     left: "5vw",
     top: "10%",
     transform: "scale(0.75)"
+}
+
+export const HistoryBackgroundStyle = {
+    position: "absolute",
+    left: "5vw",
+    top: "15%",
+    width: "25%",
+    height: "75%",
+    backgroundColor: "FFFFFF",
+    border: "2px solid",
+    borderRadius: "10px",
 }
 
 export const DeleteFromHistoryButtonStyle = {
