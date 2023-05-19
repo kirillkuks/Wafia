@@ -37,7 +37,6 @@ class Authorization extends LogInWindowPopUpCreaterComponent {
         return PersonalAreaRedirectButton();
     }
 
-
     renderHeader() {
         return (
             <header style={styles.HeaderStyle}>

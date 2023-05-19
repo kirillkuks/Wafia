@@ -8,11 +8,11 @@ import RangeSlider from 'react-bootstrap-range-slider';
 
 import "../css/reset.css";
 import "../css/leaflet.css";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/css/bootstrap.css"
 import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css"
 import "../css/app.css";
-
 
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
@@ -49,7 +49,7 @@ const AllElements = [
     "Hospital",
     "Underground",
     "Mall",
-    "University",
+    "Unifersity",
     "Church",
     "Pharmacy"
 ]
@@ -67,6 +67,7 @@ class Search extends React.Component {
             activeLat: 54.5920,
             activeLon: 22.2013,
             requireFlyTo: false,
+
 
             elementsPriority: Array.apply(null, Array(AllElements.length)).map(function () { return 0; })
         }
@@ -91,6 +92,7 @@ class Search extends React.Component {
             }
             else {
                 console.log("user status developer (debug only)");
+
                 this.setState({userRight: EUserRight.kAdmin, userLogin: "developer", requireFlyTo: false});
             }
         })();

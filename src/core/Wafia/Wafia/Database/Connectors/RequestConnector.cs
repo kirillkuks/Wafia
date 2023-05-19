@@ -3,8 +3,6 @@ using NpgsqlTypes;
 using WAFIA.Database.Types;
 
 namespace WAFIA.Database.Connectors {
-
-    using Point = NpgsqlPoint;
     using Polygon = NpgsqlPolygon;
     public class RequestConnector {
         public RequestConnector(NpgsqlConnector connector) {
@@ -13,53 +11,7 @@ namespace WAFIA.Database.Connectors {
 
         private readonly NpgsqlCommand cmd;
 
-        public async Task<List<InfrastructureObject>> Search(Request request) {
-
-            string cityIdText;
-            if (request.City != null) {
-                cityIdText = $"city = '{request.City}'";
-            }
-            else {
-                cityIdText = $"city IN (SELECT id FROM city WHERE country = '{request.Country}')";
-            }
-
-            if (request.Border != null) {
-                cmd.CommandText = $"SELECT id, coordinates, infrastructure_element, name, city FROM infrastructure_object " +
-                    $"WHERE {cityIdText} AND st_within(coordinates::geometry, @Border::geometry)";
-                cmd.Parameters.AddWithValue("Border", request.Border);
-            }
-            else {
-                cmd.CommandText = $"SELECT id, coordinates, infrastructure_element, name, city FROM infrastructure_object " +
-                    $"WHERE {cityIdText}";
-            }
-
-            NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
-
-            cmd.Parameters.Clear();
-
-            List<InfrastructureObject> result = new();
-            try {
-                while (await reader.ReadAsync()) {
-                    InfrastructureObject ie = new
-                    (
-                        (long)reader["id"],
-                        (Point)reader["coordinates"],
-                        (InfrastructureElement)(long)reader["infrastructure_element"],
-                        (string)reader["name"],
-                        (long)reader["city"]
-                    );
-                    result.Add(ie);
-                }
-                reader.Close();
-                return result;
-            }
-            catch {
-                reader.Close();
-                return result;
-            }
-        }
-
-        public async Task<bool> AddRequest(Request request) {
+        public async Task<bool> Add(Request request) {
             if (request.Border == null && request.City == null) {
                 cmd.CommandText = $"INSERT INTO request (account, date, country) VALUES (@Account, @Date, @Country)";
             }
@@ -130,11 +82,12 @@ namespace WAFIA.Database.Connectors {
             cmd.Parameters.Clear();
             return true;
         }
-
-        public async Task<List<Request>?> GetRequests(long accountId) {
+        public async Task<List<Request>> Get(long accountId) {
             cmd.CommandText = $"SELECT id, border, date, country, city FROM request WHERE account = '{accountId}'";
 
             NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+            List<Request> requests = new();
 
             List<long> ids = new();
             List<DateTime> dates = new();
@@ -152,7 +105,7 @@ namespace WAFIA.Database.Connectors {
             }
             catch {
                 reader.Close();
-                return null;
+                return requests;
             }
             reader.Close();
 
@@ -175,20 +128,30 @@ namespace WAFIA.Database.Connectors {
                 }
                 catch {
                     reader.Close();
-                    return null;
+                    return requests;
                 }
                 par.Add(parameters);
                 reader.Close();
             }
-           
 
-            List<Request> requests = new();
             for (int i = 0; i < ids.Count; ++i) {
                 requests.Add(new(ids[i], accountId, dates[i], countries[i], par[i]));
                 requests[i].City = cities[i];
                 requests[i].Border = borders[i];
             }
             return requests;
+        }
+        public async Task<bool> Delete(long id) {
+            cmd.CommandText = $"DELETE  FROM request WHERE id='{id}'";
+            try {
+                if (await cmd.ExecuteNonQueryAsync() != 0) {
+                    return true;
+                };
+                return false;
+            }
+            catch {
+                return false;
+            }
         }
     }
 }

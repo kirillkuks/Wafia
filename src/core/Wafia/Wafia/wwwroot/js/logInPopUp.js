@@ -64,7 +64,6 @@ export default class LogInWindowPopUpCreaterComponent extends React.Component {
                                 "Login": document.getElementById("LoginField").value,
                                 "Mail": "prikol",
                                 "Password": document.getElementById("PasswordField").value
-                                
                             })
                         });
                 

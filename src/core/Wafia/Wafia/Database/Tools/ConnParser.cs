@@ -1,6 +1,10 @@
-﻿namespace WAFIA.Database {
-    public static class ConnParser {
-        public static bool Parse(string path, out string? host, out string? name, out string? password, out string? baseName) {
+﻿namespace WAFIA.Database.Tools {
+    internal static class ConnParser {
+        internal static Connection? Parse(string path) {
+            string? host;
+            string? name;
+            string? password;
+            string? baseName;
             try {
                 StreamReader sr = new(path);
                 host = sr.ReadLine();
@@ -16,9 +20,10 @@
             }
 
             if (host == null || name == null || password == null || baseName == null) {
-                return false;
+                return null;
             }
-            return true;
+            Connection conn = new(host, name, password, baseName);
+            return conn;
         }
     }
 }

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wafia", "Wafia\Wafia.csproj", "{F57462CE-3ED6-4682-B0B8-09AB8A712537}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Database", "Database\Database.csproj", "{EECD83F5-F60E-4F2D-A702-1D3A8B23FD26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{C972948D-B263-49F1-A844-8B8CD41F3CCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{F57462CE-3ED6-4682-B0B8-09AB8A712537}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F57462CE-3ED6-4682-B0B8-09AB8A712537}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F57462CE-3ED6-4682-B0B8-09AB8A712537}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EECD83F5-F60E-4F2D-A702-1D3A8B23FD26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EECD83F5-F60E-4F2D-A702-1D3A8B23FD26}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EECD83F5-F60E-4F2D-A702-1D3A8B23FD26}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EECD83F5-F60E-4F2D-A702-1D3A8B23FD26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C972948D-B263-49F1-A844-8B8CD41F3CCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C972948D-B263-49F1-A844-8B8CD41F3CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C972948D-B263-49F1-A844-8B8CD41F3CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C972948D-B263-49F1-A844-8B8CD41F3CCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
