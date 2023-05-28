@@ -8,11 +8,11 @@ import RangeSlider from 'react-bootstrap-range-slider';
 
 import "../css/reset.css";
 import "../css/leaflet.css";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/css/bootstrap.css"
 import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css"
 import "../css/app.css";
-
 
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
@@ -49,7 +49,7 @@ const AllElements = [
     "Hospital",
     "Underground",
     "Mall",
-    "University",
+    "Unifersity",
     "Church",
     "Pharmacy"
 ]
@@ -71,30 +71,43 @@ class Search extends React.Component {
             area: [],
             drawArea: false,
 
+
             elementsPriority: Array.apply(null, Array(AllElements.length)).map(function () { return 0; })
         }
     }
 
     render() {
         (async () => {
-            const responce = await fetch("/api/get_session_info", {
+            //const responce = await fetch("/api/get_session_info", {
+            //    method: "POST",
+            //    headers: { "Accept": "application/json", "Content-Type": "application/json" }
+            //});
+
+
+            //if (responce.ok) {
+            //    const sessionInfo = await responce.json();
+            //    console.log("user status " + sessionInfo.user_rights);
+
+            //    if (this.state.userRight != sessionInfo.user_rights)
+            //    {
+            //        console.log(sessionInfo.user_login);
+            //        this.setState({userRight: sessionInfo.user_rights, userLogin: sessionInfo.user_login, requireFlyTo: false});
+            //    }
+            //}
+            //else {
+            //    console.log("user status developer (debug only)");
+
+            //    this.setState({userRight: EUserRight.kAdmin, userLogin: "developer", requireFlyTo: false});
+            //}
+
+            const cityResponse = await fetch("/api/get_cities", {
                 method: "POST",
                 headers: { "Accept": "application/json", "Content-Type": "application/json" }
-            })
+            });
 
-            if (responce.ok) {
-                const sessionInfo = await responce.json();
-                console.log("user status " + sessionInfo.user_rights);
-
-                if (this.state.userRight != sessionInfo.user_rights)
-                {
-                    console.log(sessionInfo.user_login);
-                    this.setState({userRight: sessionInfo.user_rights, userLogin: sessionInfo.user_login, requireFlyTo: false});
-                }
-            }
-            else {
-                console.log("user status developer (debug only)");
-                this.setState({userRight: EUserRight.kAdmin, userLogin: "developer", requireFlyTo: false});
+            if (cityResponse.ok) {
+                const cityJson = await cityResponse.json();
+                console.log(cityJson);
             }
         })();
 

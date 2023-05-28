@@ -31,7 +31,7 @@ export function FindLocation() {
     );
 }
 
-export function MoveTo({lat, lon}) {
+export function MoveTo({ lat, lon }) {
     const map = useMap();
     console.log("prikol" + lat + " | " + lon);
     map.flyTo([lat, lon], map.getZoom());

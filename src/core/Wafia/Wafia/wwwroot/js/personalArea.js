@@ -150,7 +150,6 @@ class PersonalArea extends React.Component {
                    <img src="../img/deleteFromHistory.png"></img>
                 </button>
             </div>
-            
         );
     }
 }
