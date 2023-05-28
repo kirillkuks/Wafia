@@ -195,7 +195,12 @@ async Task HandleRequest(HttpContext context) {
         var countries = await db.GC.GetCountries();
         List<CountryJs> countryJsList = new();
         foreach (var country in countries) {
-            countryJsList.Add(new(country.Name, country.Center.X, country.Center.Y));
+            var cities = await db.GC.GetCities(country);
+            List<CityJs> cityJsList = new();
+            foreach (var city in cities) {
+                cityJsList.Add(new(city.Name, city.Center.X, city.Center.Y));
+            }
+            countryJsList.Add(new(country.Name, country.Center.X, country.Center.Y, cityJsList));
         }
         await context.Response.WriteAsJsonAsync(new { countries = countryJsList });
     }
@@ -203,7 +208,12 @@ async Task HandleRequest(HttpContext context) {
     else if (context.Request.Path == "/api/get_elements") {
         var elems = new string[]{ InfrastructureElement.Healthcare.ToString(),
             InfrastructureElement.PlaceOfWorship.ToString(),
-            InfrastructureElement.University.ToString() };
+            InfrastructureElement.University.ToString(),
+            InfrastructureElement.Subway.ToString(),
+            InfrastructureElement.School.ToString(),
+            InfrastructureElement.FireStation.ToString(),
+            InfrastructureElement.Police.ToString(),
+            InfrastructureElement.Mall.ToString()};
         await context.Response.WriteAsJsonAsync(new {
             elements = elems
         });
@@ -252,12 +262,13 @@ class CityJs {
 }
 
 class CountryJs {
-    public CountryJs(string name, double lat, double lon) {
+    public CountryJs(string name, double lat, double lon, List<CityJs> cities) {
         Name = name;
         Lat = lat;
         Lon = lon;
+        Cities = cities;
     }
-
+    public List<CityJs> Cities { get; set; }
     public string Name { get; set; }
     public double Lat { get; set; }
     public double Lon { get; set; }
