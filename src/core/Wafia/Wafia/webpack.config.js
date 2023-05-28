@@ -2,6 +2,7 @@ const path = require("path");
 
 let config = {
     mode: 'development',
+    devtool: 'source-map',
     module: {
         rules: [
         {
@@ -33,7 +34,7 @@ const about = Object.assign({}, config, {
     entry: './wwwroot/js/about.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),
-        filename: "about.js"
+        filename: "about6.js"
     }
 });
 
@@ -41,7 +42,7 @@ const guestScreen = Object.assign({}, config, {
     entry: './wwwroot/js/authorization1.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),
-        filename: "authorization.js"
+        filename: "authorization5.js"
     }
 });
 
@@ -49,7 +50,7 @@ const personalArea = Object.assign({}, config, {
     entry: './wwwroot/js/personalArea.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),
-        filename: "personalArea.js"
+        filename: "personalArea5.js"
     }
 });
 
@@ -57,7 +58,7 @@ const search = Object.assign({}, config, {
     entry: './wwwroot/js/search.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),
-        filename: "search.js"
+        filename: "search5.js"
     }
 });
 

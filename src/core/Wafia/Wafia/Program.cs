@@ -177,18 +177,27 @@ async Task HandleRequest(HttpContext context) {
         await context.Response.WriteAsync("<h2>QWEQWE</h2>");
     }
 
+    //else if (context.Request.Path == "/api/get_cities") {
+    //    var countries = await db.GC.GetCountries();
+    //    List<CountryJs> countryJsList = new();
+    //    foreach (var country in countries) {
+    //        var cities = await db.GC.GetCities(country);
+    //        List<CityJs> cityJsList = new();
+    //        foreach (var city in cities) {
+    //            cityJsList.Add(new(city.Name, city.Center.X, city.Center.Y));
+    //        }
+    //        countryJsList.Add(new(country.Name, country.Center.X, country.Center.Y, cityJsList));
+    //    }
+    //    await context.Response.WriteAsJsonAsync(new { countries = countryJsList });
+    //}
+
     else if (context.Request.Path == "/api/get_cities") {
         var countries = await db.GC.GetCountries();
         List<CountryJs> countryJsList = new();
         foreach (var country in countries) {
-            var cities = await db.GC.GetCities(country);
-            List<CityJs> cityJsList = new();
-            foreach (var city in cities) {
-                cityJsList.Add(new(city.Name, city.Center.X, city.Center.Y));
-            }
-            countryJsList.Add(new(country.Name, country.Center.X, country.Center.Y, cityJsList));
+            countryJsList.Add(new(country.Name, country.Center.X, country.Center.Y));
         }
-        await context.Response.WriteAsJsonAsync(countryJsList);
+        await context.Response.WriteAsJsonAsync(new { countries = countryJsList });
     }
 
     else if (context.Request.Path == "/api/get_elements") {
@@ -199,10 +208,10 @@ async Task HandleRequest(HttpContext context) {
             elements = elems
         });
     }
-
+        
     else {
         context.Response.ContentType = "text/html; charset=utf-8";
-        await context.Response.SendFileAsync("wwwroot/GuestScreen.html");
+        await context.Response.SendFileAsync("wwwroot/GuestScreen5.html");
     }
 }
 
@@ -243,15 +252,13 @@ class CityJs {
 }
 
 class CountryJs {
-    public CountryJs(string name, double lat, double lon, List<CityJs> cities) {
+    public CountryJs(string name, double lat, double lon) {
         Name = name;
         Lat = lat;
         Lon = lon;
-        Cities = cities;
     }
 
     public string Name { get; set; }
     public double Lat { get; set; }
     public double Lon { get; set; }
-    public List<CityJs> Cities { get; set; }
 }
