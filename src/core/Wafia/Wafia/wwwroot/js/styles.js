@@ -449,3 +449,10 @@ export const MapOptionsResetAreaStyle = BuildStyle(MapOptionsButtonStyle, {
     top: "9.38%",
     bottom: "73.05%"
 });
+
+
+export const DropdownFilterStyle = {
+    position: "absolute",
+    height: "25vh",
+    overflowY: "scroll"
+}

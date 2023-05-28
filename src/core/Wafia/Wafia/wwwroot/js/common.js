@@ -14,10 +14,10 @@ export const EUserRight = {
 };
 
 export const EHtmlPages = {
-    kGuestScreen: "../GuestScreen5.html",
-    kPersonalArea: "../PersonalArea5.html",
-    kAbout: "../About6.html",
-    kSearchScreen: "../Search5.html"
+    kGuestScreen: "../GuestScreen.html",
+    kPersonalArea: "../PersonalArea.html",
+    kAbout: "../About.html",
+    kSearchScreen: "../Search.html"
 };
 
 export const ClientConsts = {
@@ -46,3 +46,4 @@ export function PersonalAreaRedirectButton() {
         </button>
     )
 }
+
