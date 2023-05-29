@@ -37,7 +37,6 @@ class Authorization extends LogInWindowPopUpCreaterComponent {
         return PersonalAreaRedirectButton();
     }
 
-
     renderHeader() {
         return (
             <header style={styles.HeaderStyle}>
@@ -66,7 +65,7 @@ class Authorization extends LogInWindowPopUpCreaterComponent {
                         //   window.location.assign("https://www.youtube.com/watch?v=ywthKNqI7uI");
                         //}
                         //else {
-                            window.location.assign("../Search.html");
+                            window.location.assign(EHtmlPages.kSearchScreen);
                         //}
                     }}>
                     <p style={styles.ButtonTextStyle}>Search</p>

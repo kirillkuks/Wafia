@@ -2,6 +2,7 @@ const path = require("path");
 
 let config = {
     mode: 'development',
+    devtool: 'source-map',
     module: {
         rules: [
         {
@@ -29,7 +30,7 @@ let config = {
     },
 }
 
-let about = Object.assign({}, config, {
+const about = Object.assign({}, config, {
     entry: './wwwroot/js/about.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),

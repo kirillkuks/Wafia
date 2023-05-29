@@ -1,13 +1,33 @@
 'use strict';
 import React from "react";
 import ReactDOM from "react-dom";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.css"
+import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css"
 import "../css/reset.css";
+import "../css/app.css";
 
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
 import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
 import LogInWindowPopUpCreaterComponent from "./logInPopUp.js";
+import { Dropdown } from "react-bootstrap";
 
+
+const UserLogOutToggle = React.forwardRef(({ children, onClick }, ref) => (
+    <a
+      href=""
+      ref={ref}
+      onClick={(e) => {
+        e.preventDefault();
+        onClick(e);
+      }}
+    >
+      {children}
+      &#x25bc;
+    </a>
+  ));
 
 
 class PersonalArea extends React.Component {
@@ -24,7 +44,7 @@ class PersonalArea extends React.Component {
             const responce = await fetch("/api/get_session_info", {
                 method: "POST",
                 headers: { "Accept": "application/json", "Content-Type": "application/json" }
-            })
+            });
 
             const sessionInfo = await responce.json();
             console.log("user status " + sessionInfo.user_rights);
@@ -57,11 +77,35 @@ class PersonalArea extends React.Component {
                     <img src="../img/backToGuestScreen.png"></img>
                 </a>
 
-                <h1 style={styles.UserLoginTextStyle}>
-                    {this.state.userLogin}
-                </h1>
+                <div style={styles.UserLoginDropdownStyle}>
+                    <Dropdown>
+                        <Dropdown.Toggle
+                            as={UserLogOutToggle}
+                            id="UserLogOut">
+                            <p style={styles.UserLoginTextStyle}>{this.state.userLogin}</p>
+                        </Dropdown.Toggle>
+                        {this.checkLogOut()}
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={async () => {
+                                const response = await fetch("/api/logout", {
+                                    method: "POST",
+                                    headers: { "Accept": "application/json", "Content-Type": "application/json" }
+                                });
+
+                                const answer = await response.json();
+                                window.location.assign(EHtmlPages.kGuestScreen);
+                                }
+                            }>Log Out</Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </div>
             </header>
         );
+    }
+
+    checkLogOut() {
+        console.log("render log out");
+        return null;
     }
 
     renderMain() {
@@ -106,7 +150,6 @@ class PersonalArea extends React.Component {
                    <img src="../img/deleteFromHistory.png"></img>
                 </button>
             </div>
-            
         );
     }
 }

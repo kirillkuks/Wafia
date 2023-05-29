@@ -6,6 +6,7 @@ import "../css/reset.css";
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
 import LogInWindowPopUpCreaterComponent from "./logInPopUp.js";
+import { PersonalAreaRedirectButton } from "./common.js";
 
 
 class About extends LogInWindowPopUpCreaterComponent {
@@ -38,14 +39,23 @@ class About extends LogInWindowPopUpCreaterComponent {
         }
     }
 
+
     renderLogInButton() {
-        return <button
-            onClick={this.logInButtonOnClick()}
-            type="button"
-            style={styles.LogInButtonStyle}>
-            {this.logInButtonOutputString()}
-        </button>
+        if (this.state.userRight === EUserRight.kGuest) {
+            return (
+                <button
+                    onClick={() => {
+                        super.setState({ screenState: EScreenState.kLogIn });
+                    }}
+                    type="button"
+                    style={styles.LogInButtonStyle}>
+                    <p style={styles.ButtonTextStyle}>Log In</p>
+                </button>)
+        }
+
+        return PersonalAreaRedirectButton();
     }
+
 
 
     renderHeader() {

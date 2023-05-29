@@ -64,7 +64,6 @@ export default class LogInWindowPopUpCreaterComponent extends React.Component {
                                 "Login": document.getElementById("LoginField").value,
                                 "Mail": "prikol",
                                 "Password": document.getElementById("PasswordField").value
-                                
                             })
                         });
                 
@@ -146,6 +145,7 @@ export default class LogInWindowPopUpCreaterComponent extends React.Component {
                             });
                     
                             if (response.ok) {
+                                console.log("success sign up");
                                 const answer = await response.json();
                                 window.location.assign(EHtmlPages.kPersonalArea);
                             }

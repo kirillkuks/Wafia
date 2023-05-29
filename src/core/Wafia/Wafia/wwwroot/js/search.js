@@ -8,51 +8,58 @@ import RangeSlider from 'react-bootstrap-range-slider';
 
 import "../css/reset.css";
 import "../css/leaflet.css";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/css/bootstrap.css"
 import "react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css"
 import "../css/app.css";
 
-
 import * as styles from "./styles.js";
 import { EScreenState, EUserRight, EHtmlPages } from "./common.js";
-import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, useMap, Marker, Popup, Polygon } from "react-leaflet";
 
 import * as MapFeature from "./mapFeatures.js";
 import { PersonalAreaRedirectButton, InfrastructureElementPriority } from "./common.js";
 
 
-const AllCities = [
-    {
-        name: "Saint-Petersburg",
-        lat: 59.95001,
-        lon: 30.31661
-    },
-    {
-        name: "Moscow",
-        lat: 55.75583,
-        lon: 37.61778
-    },
-    {
-        name: "Kaliningrad",
-        lat: 54.71666,
-        lon: 20.49991
-    }
-];
+export const FilterMenu = React.forwardRef(
+({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
+    const [value, setValue] = useState("");
 
-const AllCountries = [
-    "Russia"
-];
+    const compareValue = value.toLocaleLowerCase();
+  
+    return (
+    <div
+        ref={ref}
+        style={style}
+        className={className}
+        aria-labelledby={labeledBy}
+    >
+        <Form.Control
+        autoFocus
+        className="mx-3 my-2 w-auto"
+        placeholder="Type to filter..."
+        onChange={(e) => setValue(e.target.value)}
+        value={value}
+        />
+        <ul className="list-unstyled">
+        {React.Children.toArray(children).filter(
+            (child) => {
+                if (child.props.children === undefined) {
+                    return true;
+                }
+                if (child.props.children.toLowerCase() === "reset")
+                {
+                    return true;
+                }
 
-const AllElements = [
-    "School",
-    "Hospital",
-    "Underground",
-    "Mall",
-    "University",
-    "Church",
-    "Pharmacy"
-]
+                return !value || child.props.children.toLowerCase().startsWith(compareValue);
+            }
+        )}
+        </ul>
+    </div>
+    );
+},);
 
 
 class Search extends React.Component {
@@ -63,43 +70,83 @@ class Search extends React.Component {
             userLogin: "",
             showMapOptions: false,
             activeCity: "",
-            activeCountry: "",
+            activeCountryIdx: -1,
             activeLat: 54.5920,
             activeLon: 22.2013,
             requireFlyTo: false,
-
-            elementsPriority: Array.apply(null, Array(AllElements.length)).map(function () { return 0; })
+            useMapOptions: false,
+            area: [],
+            drawArea: false,
+            countriesInfo: [],
+            elementsInfo: [],
+            countriesFilterValue: "",
+            elementsPriority: []
         }
     }
 
     render() {
         (async () => {
-            const responce = await fetch("/api/get_session_info", {
+            //const responce = await fetch("/api/get_session_info", {
+            //    method: "POST",
+            //    headers: { "Accept": "application/json", "Content-Type": "application/json" }
+            //});
+
+
+            //if (responce.ok) {
+            //    const sessionInfo = await responce.json();
+            //    console.log("user status " + sessionInfo.user_rights);
+
+            //    if (this.state.userRight != sessionInfo.user_rights)
+            //    {
+            //        console.log(sessionInfo.user_login);
+            //        this.setState({userRight: sessionInfo.user_rights, userLogin: sessionInfo.user_login, requireFlyTo: false});
+            //    }
+            //}
+            //else {
+            //    console.log("user status developer (debug only)");
+
+            //    this.setState({userRight: EUserRight.kAdmin, userLogin: "developer", requireFlyTo: false});
+            //}
+
+            const cityResponse = await fetch("/api/get_cities", {
                 method: "POST",
                 headers: { "Accept": "application/json", "Content-Type": "application/json" }
-            })
+            });
 
-            if (responce.ok) {
-                const sessionInfo = await responce.json();
-                console.log("user status " + sessionInfo.user_rights);
+            if (cityResponse.ok) {
+                const cityJson = await cityResponse.json();
+                //console.log(cityJson);
 
-                if (this.state.userRight != sessionInfo.user_rights)
-                {
-                    console.log(sessionInfo.user_login);
-                    this.setState({userRight: sessionInfo.user_rights, userLogin: sessionInfo.user_login, requireFlyTo: false});
+                this.setState({ countriesInfo: cityJson.countries, requireFlyTo: false });
+            }
+
+            const elementsResponse = await fetch("/api/get_elements", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" }
+            });
+
+            if (elementsResponse.ok) {
+                const elementsJson = await elementsResponse.json();
+                //console.log(elementsJson);
+
+                if (this.state.elementsPriority.length != elementsJson.elements.length) {
+                    this.setState({
+                        elementsInfo: elementsJson.elements,
+                        elementsPriority: Array.apply(null, Array(elementsJson.elements.length)).map(function () { return 0; }),
+                        requireFlyTo: false
+                    });
                 }
             }
-            else {
-                console.log("user status developer (debug only)");
-                this.setState({userRight: EUserRight.kAdmin, userLogin: "developer", requireFlyTo: false});
-            }
         })();
+
+        //console.log("area: " + this.state.area[0]);
 
         return (
             <div>
                 {this.renderHeader()}
                 {this.renderMap()}
                 {this.renderSearchParams()}
+                {this.state.useMapOptions ? this.renderMapOptions() : null}
             </div>
         );
     }
@@ -135,6 +182,9 @@ class Search extends React.Component {
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
                         {this.state.requireFlyTo ? <MapFeature.MoveTo lat={this.state.activeLat} lon={this.state.activeLon} /> :  null}
+                        <MapFeature.ClickProcesser mapComp={this}/>
+                        {this.state.drawArea ?
+                            <Polygon pathOptions={{color: "purple"}} positions={this.state.area} /> : null}
                 </MapContainer>
             </section>
         );
@@ -152,24 +202,26 @@ class Search extends React.Component {
     }
 
     renderAreaSearchParams() {
+        //console.log(this.state.countriesInfo);
+
         return (
             <div>
                 <h1 style={styles.AreaParamsHelperTextSyle}>Search Area</h1>
                 {this.renderDropdown(
-                    this.state.activeCountry === "" ? "Country" : this.state.activeCountry,
+                    this.state.activeCountryIdx === -1 ? "Country" : this.state.countriesInfo[this.state.activeCountryIdx].name,
                     "2vh",
-                    AllCountries.map(
-                        (country) => (
+                    this.state.countriesInfo.map(
+                        (country, idx) => (
                             <Dropdown.Item onClick={() => {
-                                this.setState({activeCountry: country, requireFlyTo: false})
+                                this.setState({activeCountryIdx: idx, requireFlyTo: false})
                             }}>
-                                {country}
+                                {country.name}
                             </Dropdown.Item>
                         )
                     ).concat(
                         [<Dropdown.Divider />,
                         <Dropdown.Item onClick={() => {
-                            this.setState({activeCountry: "", requireFlyTo: false})
+                            this.setState({activeCountryIdx: -1, requireFlyTo: false})
                         }}>
                             Reset
                         </Dropdown.Item>]
@@ -178,7 +230,8 @@ class Search extends React.Component {
                 {this.renderDropdown(
                     this.state.activeCity === "" ? "City" : this.state.activeCity,
                     "6vh",
-                    AllCities.map(
+                    this.state.activeCountryIdx === -1 ? [] :
+                    this.state.countriesInfo[this.state.activeCountryIdx].cities.map(
                         (city) => (
                             <Dropdown.Item onClick={() => {
                                 this.setState({
@@ -241,16 +294,60 @@ class Search extends React.Component {
                 </button>
                 <button
                     type="button"
-                    style={styles.SearchManageMapOptionsButton}>
+                    style={styles.SearchManageMapOptionsButton}
+                    onClick={() => {
+                        this.setState({useMapOptions: !this.state.useMapOptions, requireFlyTo: false})
+                    }}>
                     <p style={styles.ButtonTextStyle}>Map options</p>
                 </button>
             </div>
         );
     }
 
+    renderMapOptions() {
+        function coordArrayToString(arr) {
+            let res = "";
+
+            arr.forEach(element => {
+                res += element[0].toFixed(2);
+                res += ","
+                res += element[1].toFixed(2);
+                res += ";"
+            });
+
+            return res;
+        }
+
+        return (
+        <div style={styles.MapOptionsStyle}>
+            <input
+                placeholder={coordArrayToString(this.state.area)}
+                style={styles.MapOptionsPointsStyle}
+                readOnly="readonly">
+            </input>
+            <button
+                type="button"
+                style={styles.MapOptionsSubmitAreaStyle}
+                onClick={() => {
+                    this.setState({drawArea: true, requireFlyTo: false})
+                }}>
+                Submit Area
+            </button>
+            <button
+                type="button"
+                style={styles.MapOptionsResetAreaStyle}
+                onClick={() => {
+                    this.setState({drawArea: false, area: [], requireFlyTo: false})
+                }}>
+                Reset Area
+            </button>
+        </div>
+        );
+    }
+
     renderDropdown(toggleString, top, items) {
         return (
-            <div style={{position: "absolute", left: "2vw", top: top, width: "20vw", height: "4vh"}}>
+            <div style={{position: "absolute", left: "2vw", top: top, width: "20vw", height: "50vh"}}>
                 <Dropdown>
                     <Dropdown.Toggle
                         variant="success"
@@ -258,7 +355,7 @@ class Search extends React.Component {
                         {toggleString}
                     </Dropdown.Toggle>
 
-                    <Dropdown.Menu>
+                    <Dropdown.Menu as={FilterMenu}>
                         {items}
                     </Dropdown.Menu>
                 </Dropdown>
@@ -285,7 +382,7 @@ class Search extends React.Component {
 
         return (
             <div>
-            {AllElements.map((element, idx) => (
+            {this.state.elementsInfo.map((element, idx) => (
                 <div>
                     <h1 style={calcHelperTextStyle(idx)}>{element}</h1>
                     <div style={calcRangeStyle(idx)}>
