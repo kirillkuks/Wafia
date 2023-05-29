@@ -1,5 +1,6 @@
 ﻿using Npgsql;
 using NpgsqlTypes;
+using System.Drawing;
 using WAFIA.Database.Types;
 
 namespace WAFIA.Database.Connectors {
@@ -10,6 +11,54 @@ namespace WAFIA.Database.Connectors {
         }
 
         private readonly NpgsqlCommand cmd;
+
+        public async Task<List<string>> GetInfrElements()
+        {
+            cmd.CommandText = "SELECT name FROM infrastructure_element";
+            NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
+            var result = new List<string>();
+
+            try
+            {
+                while (await reader.ReadAsync())
+                {
+                    result.Add((string)reader["name"]);
+                }
+                reader.Close();
+                return result;
+            }
+            catch
+            {
+                reader.Close();
+                return result; ;
+            }
+        }
+
+        public async Task<long?> GetCountry(string name)
+        {
+            cmd.CommandText = $"SELECT id FROM infrastructure_element WHERE name = '{name}'";
+            NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+            try
+            {
+                if (await reader.ReadAsync())
+                {
+                    var id = (long)reader["id"];
+                    reader.Close();
+                    return id;
+                }
+                else
+                {
+                    reader.Close();
+                    return null;
+                }
+            }
+            catch
+            {
+                reader.Close();
+                return null;
+            }
+        }
 
         public async Task<bool> AddInfrElement(string name) {
             cmd.CommandText = $"INSERT INTO infrastructure_element (name) VALUES (@Name)";

@@ -206,17 +206,8 @@ async Task HandleRequest(HttpContext context) {
     }
 
     else if (context.Request.Path == "/api/get_elements") {
-        var elems = new string[]{ InfrastructureElement.Healthcare.ToString(),
-            InfrastructureElement.PlaceOfWorship.ToString(),
-            InfrastructureElement.University.ToString(),
-            InfrastructureElement.Subway.ToString(),
-            InfrastructureElement.School.ToString(),
-            InfrastructureElement.FireStation.ToString(),
-            InfrastructureElement.Police.ToString(),
-            InfrastructureElement.Mall.ToString()};
-        await context.Response.WriteAsJsonAsync(new {
-            elements = elems
-        });
+        var elems = await db.IC.GetInfrElements();
+        await context.Response.WriteAsJsonAsync(new { elements = elems });
     }
         
     else {
