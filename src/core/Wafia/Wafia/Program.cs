@@ -222,7 +222,7 @@ async Task HandleRequest(HttpContext context) {
         
     else {
         context.Response.ContentType = "text/html; charset=utf-8";
-        await context.Response.SendFileAsync("wwwroot/GuestScreen5.html");
+        await context.Response.SendFileAsync("wwwroot/GuestScreen.html");
     }
 }
 

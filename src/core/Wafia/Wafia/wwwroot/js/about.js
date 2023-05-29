@@ -62,7 +62,7 @@ class About extends LogInWindowPopUpCreaterComponent {
         return (
             <header style={styles.HeaderStyle}>
                 <div style={styles.HeaderTitle}>
-                    <h1>AboutPrikol</h1>
+                    <h1>About</h1>
                 </div>
 
                 <a

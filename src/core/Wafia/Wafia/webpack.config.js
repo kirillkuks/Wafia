@@ -34,7 +34,7 @@ const about = Object.assign({}, config, {
     entry: './wwwroot/js/about.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),
-        filename: "about6.js"
+        filename: "about.js"
     }
 });
 
@@ -42,7 +42,7 @@ const guestScreen = Object.assign({}, config, {
     entry: './wwwroot/js/authorization1.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),
-        filename: "authorization5.js"
+        filename: "authorization.js"
     }
 });
 
@@ -50,7 +50,7 @@ const personalArea = Object.assign({}, config, {
     entry: './wwwroot/js/personalArea.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),
-        filename: "personalArea5.js"
+        filename: "personalArea.js"
     }
 });
 
@@ -58,7 +58,7 @@ const search = Object.assign({}, config, {
     entry: './wwwroot/js/search.js',
     output: {
         path: path.join(__dirname, "/wwwroot/dst"),
-        filename: "search5.js"
+        filename: "search.js"
     }
 });
 

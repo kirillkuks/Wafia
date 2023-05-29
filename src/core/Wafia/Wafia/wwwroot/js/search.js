@@ -22,37 +22,44 @@ import * as MapFeature from "./mapFeatures.js";
 import { PersonalAreaRedirectButton, InfrastructureElementPriority } from "./common.js";
 
 
-const AllCities = [
-    {
-        name: "Saint-Petersburg",
-        lat: 59.95001,
-        lon: 30.31661
-    },
-    {
-        name: "Moscow",
-        lat: 55.75583,
-        lon: 37.61778
-    },
-    {
-        name: "Kaliningrad",
-        lat: 54.71666,
-        lon: 20.49991
-    }
-];
+export const FilterMenu = React.forwardRef(
+({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
+    const [value, setValue] = useState("");
 
-const AllCountries = [
-    "Russia"
-];
+    const compareValue = value.toLocaleLowerCase();
+  
+    return (
+    <div
+        ref={ref}
+        style={style}
+        className={className}
+        aria-labelledby={labeledBy}
+    >
+        <Form.Control
+        autoFocus
+        className="mx-3 my-2 w-auto"
+        placeholder="Type to filter..."
+        onChange={(e) => setValue(e.target.value)}
+        value={value}
+        />
+        <ul className="list-unstyled">
+        {React.Children.toArray(children).filter(
+            (child) => {
+                if (child.props.children === undefined) {
+                    return true;
+                }
+                if (child.props.children.toLowerCase() === "reset")
+                {
+                    return true;
+                }
 
-const AllElements = [
-    "School",
-    "Hospital",
-    "Underground",
-    "Mall",
-    "Unifersity",
-    "Church",
-    "Pharmacy"
-]
+                return !value || child.props.children.toLowerCase().startsWith(compareValue);
+            }
+        )}
+        </ul>
+    </div>
+    );
+},);
 
 
 class Search extends React.Component {
@@ -63,16 +70,17 @@ class Search extends React.Component {
             userLogin: "",
             showMapOptions: false,
             activeCity: "",
-            activeCountry: "",
+            activeCountryIdx: -1,
             activeLat: 54.5920,
             activeLon: 22.2013,
             requireFlyTo: false,
             useMapOptions: false,
             area: [],
             drawArea: false,
-
-
-            elementsPriority: Array.apply(null, Array(AllElements.length)).map(function () { return 0; })
+            countriesInfo: [],
+            elementsInfo: [],
+            countriesFilterValue: "",
+            elementsPriority: []
         }
     }
 
@@ -107,11 +115,31 @@ class Search extends React.Component {
 
             if (cityResponse.ok) {
                 const cityJson = await cityResponse.json();
-                console.log(cityJson);
+                //console.log(cityJson);
+
+                this.setState({ countriesInfo: cityJson.countries, requireFlyTo: false });
+            }
+
+            const elementsResponse = await fetch("/api/get_elements", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" }
+            });
+
+            if (elementsResponse.ok) {
+                const elementsJson = await elementsResponse.json();
+                //console.log(elementsJson);
+
+                if (this.state.elementsPriority.length != elementsJson.elements.length) {
+                    this.setState({
+                        elementsInfo: elementsJson.elements,
+                        elementsPriority: Array.apply(null, Array(elementsJson.elements.length)).map(function () { return 0; }),
+                        requireFlyTo: false
+                    });
+                }
             }
         })();
 
-        console.log("area: " + this.state.area[0]);
+        //console.log("area: " + this.state.area[0]);
 
         return (
             <div>
@@ -174,24 +202,26 @@ class Search extends React.Component {
     }
 
     renderAreaSearchParams() {
+        //console.log(this.state.countriesInfo);
+
         return (
             <div>
                 <h1 style={styles.AreaParamsHelperTextSyle}>Search Area</h1>
                 {this.renderDropdown(
-                    this.state.activeCountry === "" ? "Country" : this.state.activeCountry,
+                    this.state.activeCountryIdx === -1 ? "Country" : this.state.countriesInfo[this.state.activeCountryIdx].name,
                     "2vh",
-                    AllCountries.map(
-                        (country) => (
+                    this.state.countriesInfo.map(
+                        (country, idx) => (
                             <Dropdown.Item onClick={() => {
-                                this.setState({activeCountry: country, requireFlyTo: false})
+                                this.setState({activeCountryIdx: idx, requireFlyTo: false})
                             }}>
-                                {country}
+                                {country.name}
                             </Dropdown.Item>
                         )
                     ).concat(
                         [<Dropdown.Divider />,
                         <Dropdown.Item onClick={() => {
-                            this.setState({activeCountry: "", requireFlyTo: false})
+                            this.setState({activeCountryIdx: -1, requireFlyTo: false})
                         }}>
                             Reset
                         </Dropdown.Item>]
@@ -200,7 +230,8 @@ class Search extends React.Component {
                 {this.renderDropdown(
                     this.state.activeCity === "" ? "City" : this.state.activeCity,
                     "6vh",
-                    AllCities.map(
+                    this.state.activeCountryIdx === -1 ? [] :
+                    this.state.countriesInfo[this.state.activeCountryIdx].cities.map(
                         (city) => (
                             <Dropdown.Item onClick={() => {
                                 this.setState({
@@ -316,7 +347,7 @@ class Search extends React.Component {
 
     renderDropdown(toggleString, top, items) {
         return (
-            <div style={{position: "absolute", left: "2vw", top: top, width: "20vw", height: "4vh"}}>
+            <div style={{position: "absolute", left: "2vw", top: top, width: "20vw", height: "50vh"}}>
                 <Dropdown>
                     <Dropdown.Toggle
                         variant="success"
@@ -324,7 +355,7 @@ class Search extends React.Component {
                         {toggleString}
                     </Dropdown.Toggle>
 
-                    <Dropdown.Menu>
+                    <Dropdown.Menu as={FilterMenu}>
                         {items}
                     </Dropdown.Menu>
                 </Dropdown>
@@ -351,7 +382,7 @@ class Search extends React.Component {
 
         return (
             <div>
-            {AllElements.map((element, idx) => (
+            {this.state.elementsInfo.map((element, idx) => (
                 <div>
                     <h1 style={calcHelperTextStyle(idx)}>{element}</h1>
                     <div style={calcRangeStyle(idx)}>
