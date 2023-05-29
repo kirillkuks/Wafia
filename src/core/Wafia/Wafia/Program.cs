@@ -1,3 +1,4 @@
+using WAFIA.Algorithms;
 using WAFIA.Database;
 using WAFIA.Database.Types;
 using WAFIA.Loader;
@@ -178,7 +179,21 @@ async Task HandleRequest(HttpContext context) {
     }
 
     else if (context.Request.Path == "/api/search/search") {
-        var loginData = await context.Request.ReadFromJsonAsync<RequestJS>();
+        var reqJson = await context.Request.ReadFromJsonAsync<RequestJS>();
+        if (reqJson != null) {
+            List<Parameter> parameters = new();
+            foreach (var paramJs in reqJson.Parameters) {
+                //parameters.Add(new(, (Value)paramJs.Value));
+            }
+            var country = await db.GC.GetCountry(reqJson.Country);
+            if (country != null) {
+                Request req = new(0, reqJson.Account, reqJson.Date, country.Id, parameters);
+
+                var objs = await db.IC.Search(req);
+
+                var res = GeoAlgorithms.FindZones(req, objs);
+            }
+        }
     }
 
     else if (context.Request.Path == "/api/get_cities") {
@@ -196,18 +211,8 @@ async Task HandleRequest(HttpContext context) {
     }
 
     else if (context.Request.Path == "/api/get_elements") {
-        var elems = new string[]{ 
-            InfrastructureElement.Healthcare.ToString(),
-            InfrastructureElement.PlaceOfWorship.ToString(),
-            InfrastructureElement.University.ToString(),
-            InfrastructureElement.Subway.ToString(),
-            InfrastructureElement.School.ToString(),
-            InfrastructureElement.FireStation.ToString(),
-            InfrastructureElement.Police.ToString(),
-            InfrastructureElement.Mall.ToString()};
-        await context.Response.WriteAsJsonAsync(new {
-            elements = elems
-        });
+        var elems = await db.IC.GetInfrElements();
+        await context.Response.WriteAsJsonAsync(new { elements = elems });
     }
         
     else {
@@ -303,4 +308,8 @@ class RequestJS {
         City = city;
         Date = date;
     }
+}
+
+class PriorityPointJs {
+    public double X { get; set; }
 }
