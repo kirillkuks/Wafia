@@ -1,10 +1,8 @@
 ﻿using Npgsql;
 using NpgsqlTypes;
-using System.Drawing;
 using WAFIA.Database.Types;
 
 namespace WAFIA.Database.Connectors {
-    using Point = NpgsqlPoint;
     public class InfrastructureConnector {
         public InfrastructureConnector(NpgsqlConnector connector) {
             cmd = connector.Cmd;
@@ -153,8 +151,9 @@ namespace WAFIA.Database.Connectors {
             return true;
         }
         public async Task<InfrastructureObject?> GetObject(string name, Point coord) {
+            NpgsqlPoint npgsqlPoint = new(coord.X, coord.Y);
             cmd.CommandText = "SELECT id, street, website, opening_hours, infrastructure_element, city, " +
-                $"house, phone FROM infrastructure_object WHERE name='{name}' and coord='{coord}'";
+                $"house, phone FROM infrastructure_object WHERE name='{name}' and coord='{npgsqlPoint}'";
 
             NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
 
@@ -274,10 +273,12 @@ namespace WAFIA.Database.Connectors {
             List<InfrastructureObject> result = new();
             try {
                 while (await reader.ReadAsync()) {
+                    var npgsqlPoint = (NpgsqlPoint)reader["coordinates"];
+                    Point point = new(npgsqlPoint.X, npgsqlPoint.Y);
                     InfrastructureObject ie = new
                     (
                         (long)reader["id"],
-                        (Point)reader["coordinates"],
+                        point,
                         (InfrastructureElement)(long)reader["infrastructure_element"],
                         (string)reader["name"],
                         (long)reader["city"]
