@@ -13,6 +13,10 @@ namespace WAFIA.Database.Connectors {
         public async Task<List<string>> GetInfrElements()
         {
             cmd.CommandText = "SELECT name FROM infrastructure_element";
+
+            cmd.Connection?.Close();
+            cmd.Connection?.Open();
+
             NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
             var result = new List<string>();
 

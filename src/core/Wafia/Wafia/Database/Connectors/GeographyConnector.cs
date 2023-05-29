@@ -4,6 +4,7 @@ using WAFIA.Database.Types;
 
 namespace WAFIA.Database.Connectors {
     public class GeographyConnector {
+
         public GeographyConnector(NpgsqlConnector connector) {
             cmd = connector.Cmd;
         }
@@ -12,6 +13,9 @@ namespace WAFIA.Database.Connectors {
 
         public async Task<List<Country>> GetCountries() {
             cmd.CommandText = "SELECT id, name, center FROM country";
+            
+            cmd.Connection?.Close();
+            cmd.Connection?.Open();
 
             NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
 
