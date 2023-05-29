@@ -206,7 +206,8 @@ async Task HandleRequest(HttpContext context) {
     }
 
     else if (context.Request.Path == "/api/get_elements") {
-        var elems = new string[]{ InfrastructureElement.Healthcare.ToString(),
+        var elems = new string[]{ 
+            InfrastructureElement.Healthcare.ToString(),
             InfrastructureElement.PlaceOfWorship.ToString(),
             InfrastructureElement.University.ToString(),
             InfrastructureElement.Subway.ToString(),
@@ -224,7 +225,6 @@ async Task HandleRequest(HttpContext context) {
         await context.Response.SendFileAsync("wwwroot/GuestScreen5.html");
     }
 }
-
 
 
 app.UseStaticFiles();
@@ -272,4 +272,18 @@ class CountryJs {
     public string Name { get; set; }
     public double Lat { get; set; }
     public double Lon { get; set; }
+}
+
+class ParameterJs {
+    public string Element { get; set; }
+    public long Value { get; set; }
+
+    public ParameterJs(string element, long value) {
+        Element = element;
+        Value = value;
+    }
+}
+
+class RequestJS {
+
 }

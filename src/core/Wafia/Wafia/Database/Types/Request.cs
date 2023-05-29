@@ -5,10 +5,10 @@ namespace WAFIA.Database.Types {
     using Polygon = NpgsqlPolygon;
 
     public enum Value : long {
-        Important = 1,
-        VeryImportant = 2,
-        Desirable = 3,
-        NoMatter = 4
+        VeryImportant = 4,
+        Important = 3,
+        Desirable = 2,
+        NoMatter = 1
     }
 
     public class Parameter {
