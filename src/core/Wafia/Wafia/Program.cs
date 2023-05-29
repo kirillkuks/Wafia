@@ -191,7 +191,7 @@ async Task HandleRequest(HttpContext context) {
             }
             var country = await db.GC.GetCountry(reqJson.Country);
             if (country != null) {
-                Request req = new(0, reqJson.Account, reqJson.Date, country.Id, parameters);
+                Request req = new(0, reqJson.Account, DateTime.Now, country.Id, parameters);
 
                 if (reqJson.City != null) {
                     var city = await db.GC.GetCity(reqJson.City, country);
@@ -209,7 +209,7 @@ async Task HandleRequest(HttpContext context) {
                 var res = GeoAlgorithms.FindZones(req, objs);
 
                 context.Response.StatusCode = 200;
-                await context.Response.WriteAsJsonAsync(new );
+                await context.Response.WriteAsJsonAsync(new { result = res });
             }
             else {
                 context.Response.StatusCode = 404;
@@ -235,7 +235,7 @@ async Task HandleRequest(HttpContext context) {
             }
             var country = await db.GC.GetCountry(reqJson.Country);
             if (country != null) {
-                Request req = new(0, reqJson.Account, reqJson.Date, country.Id, parameters);
+                Request req = new(0, reqJson.Account, DateTime.Now, country.Id, parameters);
 
                 if (reqJson.City != null) {
                     var city = await db.GC.GetCity(reqJson.City, country);
@@ -341,15 +341,6 @@ class CountryJs {
     public double Lon { get; set; }
 }
 
-class PointJs {
-    public double X { get; set; }
-    public double Y { get; set; }
-
-    public PointJs(double x, double y) {
-        X = x;
-        Y = y;
-    }
-}
 class ParameterJs {
     public string Element { get; set; }
     public long Value { get; set; }
@@ -361,7 +352,7 @@ class ParameterJs {
 class RequestJS {
     public long Account { get; set; }
     public List<ParameterJs> Parameters { get; set; }
-    public List<PointJs>? Border { get; set; }
+    public List<Point>? Border { get; set; }
     public string Country { get; set; }
     public string? City { get; set; }
     public DateTime Date { get; set; }
@@ -369,19 +360,13 @@ class RequestJS {
     public RequestJS(
         long account, 
         List<ParameterJs> parameters, 
-        List<PointJs>? border, 
+        List<Point>? border, 
         string country, 
-        string? city, 
-        DateTime date) {
+        string? city) {
         Account = account;
         Parameters = parameters;
         Border = border;
         Country = country;
         City = city;
-        Date = date;
     }
-}
-
-class PriorityPointJs {
-    public double X { get; set; }
 }
