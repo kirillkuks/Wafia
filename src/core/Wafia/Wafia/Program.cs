@@ -173,12 +173,7 @@ async Task HandleRequest(HttpContext context) {
         await context.Response.SendFileAsync("wwwroot/About.html");
     }
 
-    else if (context.Request.Path == "/api/search") {
-        context.Response.ContentType = "text/html; charset=utf-8";
-        await context.Response.WriteAsync("<h2>QWEQWE</h2>");
-    }
-
-    else if (context.Request.Path == "/search/search") {
+    else if (context.Request.Path == "/api/save_request") {
         var reqJson = await context.Request.ReadFromJsonAsync<RequestJS>();
         if (reqJson != null) {
             List<Parameter> parameters = new();
@@ -222,7 +217,7 @@ async Task HandleRequest(HttpContext context) {
         }
     }
 
-    else if (context.Request.Path == "/search/save") {
+    else if (context.Request.Path == "/api/perform_request") {
         var reqJson = await context.Request.ReadFromJsonAsync<RequestJS>();
         if (reqJson != null) {
             List<Parameter> parameters = new();
