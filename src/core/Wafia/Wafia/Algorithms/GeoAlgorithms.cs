@@ -1,6 +1,4 @@
 using NpgsqlTypes;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using WAFIA.Database.Types;
 
 namespace WAFIA.Algorithms {

@@ -63,7 +63,6 @@ namespace WAFIA.Database.Connectors {
                 return null;
             }
         }
-
         public async Task<Country?> GetCountry(string name) {
             cmd.CommandText = $"SELECT id, center FROM country WHERE name = '{name}'";
 
@@ -169,6 +168,33 @@ namespace WAFIA.Database.Connectors {
                             (string)reader["name"],
                             (long)reader["country"],
                             point
+                        );
+                    reader.Close();
+                    return city;
+                }
+                else {
+                    reader.Close();
+                    return null;
+                }
+            }
+            catch {
+                reader.Close();
+                return null;
+            }
+        }
+        public async Task<City?> GetCity(string name, Country country) {
+            cmd.CommandText = $"SELECT id, center FROM city WHERE name = '{name}' AND country = '{country.Id}'";
+
+            NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+            try {
+                if (await reader.ReadAsync()) {
+                    City city = new
+                        (
+                            (long)reader["id"],
+                            name,
+                            country.Id,
+                            (Point)reader["center"]
                         );
                     reader.Close();
                     return city;
