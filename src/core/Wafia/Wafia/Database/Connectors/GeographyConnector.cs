@@ -60,6 +60,32 @@ namespace WAFIA.Database.Connectors {
                 return null;
             }
         }
+
+        public async Task<Country?> GetCountry(string name) {
+            cmd.CommandText = $"SELECT id, center FROM country WHERE name = '{name}'";
+
+            NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+            try {
+                if (await reader.ReadAsync()) {
+                    var country = new Country(
+                        (long)reader["id"],
+                        name,
+                        (Point)reader["center"]
+                        );
+                    reader.Close();
+                    return country;
+                }
+                else {
+                    reader.Close();
+                    return null;
+                }
+            }
+            catch {
+                reader.Close();
+                return null;
+            }
+        }
         public async Task<bool> AddCountry(Country country) {
             cmd.CommandText = $"INSERT INTO country (name, center) VALUES (@Name, @Center)";
             cmd.Parameters.AddWithValue("Name", country.Name);

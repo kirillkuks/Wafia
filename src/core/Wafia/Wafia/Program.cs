@@ -63,7 +63,7 @@ async Task HandleRequest(HttpContext context) {
     }
 
     else if (context.Request.Path == "/api/login") {
-        var loginData = await context.Request.ReadFromJsonAsync<LoginData>();
+        var loginData = await context.Request.ReadFromJsonAsync<AccountJs>();
         bool userFound = false;
         bool innerFail = false;
 
@@ -95,7 +95,7 @@ async Task HandleRequest(HttpContext context) {
     }
 
     else if (context.Request.Path == "/api/signup") {
-        var loginData = await context.Request.ReadFromJsonAsync<LoginData>();
+        var loginData = await context.Request.ReadFromJsonAsync<AccountJs>();
         bool userFound = false;
 
         if (loginData != null) {
@@ -177,19 +177,9 @@ async Task HandleRequest(HttpContext context) {
         await context.Response.WriteAsync("<h2>QWEQWE</h2>");
     }
 
-    //else if (context.Request.Path == "/api/get_cities") {
-    //    var countries = await db.GC.GetCountries();
-    //    List<CountryJs> countryJsList = new();
-    //    foreach (var country in countries) {
-    //        var cities = await db.GC.GetCities(country);
-    //        List<CityJs> cityJsList = new();
-    //        foreach (var city in cities) {
-    //            cityJsList.Add(new(city.Name, city.Center.X, city.Center.Y));
-    //        }
-    //        countryJsList.Add(new(country.Name, country.Center.X, country.Center.Y, cityJsList));
-    //    }
-    //    await context.Response.WriteAsJsonAsync(new { countries = countryJsList });
-    //}
+    else if (context.Request.Path == "/api/search/search") {
+        var loginData = await context.Request.ReadFromJsonAsync<RequestJS>();
+    }
 
     else if (context.Request.Path == "/api/get_cities") {
         var countries = await db.GC.GetCountries();
@@ -238,8 +228,8 @@ app.Run();
 class RedirectResponse {
     public string Link { get; set; } = "";
 }
-class LoginData {
-    public LoginData(string login, string password, string mail) {
+class AccountJs {
+    public AccountJs(string login, string password, string mail) {
         Login = login;
         Mail = mail;
         Password = password;
@@ -274,16 +264,43 @@ class CountryJs {
     public double Lon { get; set; }
 }
 
+class PointJs {
+    public double X { get; set; }
+    public double Y { get; set; }
+
+    public PointJs(double x, double y) {
+        X = x;
+        Y = y;
+    }
+}
 class ParameterJs {
     public string Element { get; set; }
     public long Value { get; set; }
-
     public ParameterJs(string element, long value) {
         Element = element;
         Value = value;
     }
 }
-
 class RequestJS {
+    public long Account { get; set; }
+    public List<ParameterJs> Parameters { get; set; }
+    public List<PointJs> Border { get; set; }
+    public string Country { get; set; }
+    public string? City { get; set; }
+    public DateTime Date { get; set; }
 
+    public RequestJS(
+        long account, 
+        List<ParameterJs> parameters, 
+        List<PointJs> border, 
+        string country, 
+        string? city, 
+        DateTime date) {
+        Account = account;
+        Parameters = parameters;
+        Border = border;
+        Country = country;
+        City = city;
+        Date = date;
+    }
 }
