@@ -4,8 +4,6 @@ using WAFIA.Database.Types;
 
 namespace WAFIA.Loader
 {
-
-    using Point = NpgsqlPoint;
     using OQBuilder = OverpassQueryBuilder;
     static public class OverpassLoader {
 
