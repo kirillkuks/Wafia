@@ -10,16 +10,20 @@ namespace WAFIA.Algorithms {
         { Value.Important, deltaNet * 2 },
         { Value.VeryImportant, deltaNet }
         };
-        public static List<PriorityPoint> FindZones(Request req, List<InfrastructureObject> objs) {
+
+        public static List<PriorityPoint> FindZones(Request req, List<InfrastructureObject> objs, out List<InfrastructureObject> outObjs)
+        {
             List<PriorityPoint> zones = new();
+            outObjs = new();
 
             if (req.Border == null || req.Border.Count == 0) {
                 foreach (var obj in objs) {
                     foreach (var param in req.Parameters) {
-                        if (obj.InfrElem != param.InfrElement) {
-                            continue;
+                        if (obj.InfrElem == param.InfrElement
+                            && (param.Value == Value.VeryImportant || param.Value == Value.Important)) {
+                            outObjs.Add(obj);
+                            zones.Add(new(obj.Coord, 1.0f));
                         }
-                        zones.Add(new(obj.Coord, 1.0f));
                     }
                 }
             } 
@@ -40,6 +44,8 @@ namespace WAFIA.Algorithms {
                     if (objs[i].Coord.Y < botLeftPoint.Y) {
                         botLeftPoint.Y = objs[i].Coord.Y;
                     }
+
+                    outObjs.Add(objs[i]);
                 }
 
                 topRightPoint.X = Math.Round(topRightPoint.X, 3, MidpointRounding.ToPositiveInfinity); //

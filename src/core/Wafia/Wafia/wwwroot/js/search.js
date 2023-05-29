@@ -80,61 +80,65 @@ class Search extends React.Component {
             countriesInfo: [],
             elementsInfo: [],
             countriesFilterValue: "",
-            elementsPriority: []
+            elementsPriority: [],
+            activeObjects: []
         }
     }
 
     render() {
         (async () => {
-            //const responce = await fetch("/api/get_session_info", {
-            //    method: "POST",
-            //    headers: { "Accept": "application/json", "Content-Type": "application/json" }
-            //});
+            if (!this.state.userLogin) {
+                const responce = await fetch("/api/get_session_info", {
+                    method: "POST",
+                    headers: { "Accept": "application/json", "Content-Type": "application/json" }
+                });
 
+                if (responce.ok) {
+                    const sessionInfo = await responce.json();
+                    console.log("user status " + sessionInfo.user_rights);
 
-            //if (responce.ok) {
-            //    const sessionInfo = await responce.json();
-            //    console.log("user status " + sessionInfo.user_rights);
-
-            //    if (this.state.userRight != sessionInfo.user_rights)
-            //    {
-            //        console.log(sessionInfo.user_login);
-            //        this.setState({userRight: sessionInfo.user_rights, userLogin: sessionInfo.user_login, requireFlyTo: false});
-            //    }
-            //}
-            //else {
-            //    console.log("user status developer (debug only)");
-
-            //    this.setState({userRight: EUserRight.kAdmin, userLogin: "developer", requireFlyTo: false});
-            //}
-
-            const cityResponse = await fetch("/api/get_cities", {
-                method: "POST",
-                headers: { "Accept": "application/json", "Content-Type": "application/json" }
-            });
-
-            if (cityResponse.ok) {
-                const cityJson = await cityResponse.json();
-                //console.log(cityJson);
-
-                this.setState({ countriesInfo: cityJson.countries, requireFlyTo: false });
+                    if (this.state.userRight != sessionInfo.user_rights) {
+                        console.log(sessionInfo.user_login);
+                        this.setState({userRight: sessionInfo.user_rights, userLogin: sessionInfo.user_login, requireFlyTo: false});
+                    }
+                }
+                else {
+                    console.log("user status developer (debug only)");
+                    this.setState({userRight: EUserRight.kAdmin, userLogin: "developer", requireFlyTo: false});
+                }
             }
 
-            const elementsResponse = await fetch("/api/get_elements", {
-                method: "POST",
-                headers: { "Accept": "application/json", "Content-Type": "application/json" }
-            });
+            if (this.state.countriesInfo.length == 0) {
+                const cityResponse = await fetch("/api/get_cities", {
+                    method: "POST",
+                    headers: { "Accept": "application/json", "Content-Type": "application/json" }
+                });
 
-            if (elementsResponse.ok) {
-                const elementsJson = await elementsResponse.json();
-                //console.log(elementsJson);
+                if (cityResponse.ok) {
+                    const cityJson = await cityResponse.json();
+                    //console.log(cityJson);
 
-                if (this.state.elementsPriority.length != elementsJson.elements.length) {
-                    this.setState({
-                        elementsInfo: elementsJson.elements,
-                        elementsPriority: Array.apply(null, Array(elementsJson.elements.length)).map(function () { return 0; }),
-                        requireFlyTo: false
-                    });
+                    this.setState({ countriesInfo: cityJson.countries, requireFlyTo: false });
+                }
+            }
+
+            if (this.state.elementsPriority.length == 0) {
+                const elementsResponse = await fetch("/api/get_elements", {
+                    method: "POST",
+                    headers: { "Accept": "application/json", "Content-Type": "application/json" }
+                });
+
+                if (elementsResponse.ok) {
+                    const elementsJson = await elementsResponse.json();
+                    //console.log(elementsJson);
+
+                    if (this.state.elementsPriority.length != elementsJson.elements.length) {
+                        this.setState({
+                            elementsInfo: elementsJson.elements,
+                            elementsPriority: Array.apply(null, Array(elementsJson.elements.length)).map(function () { return 0; }),
+                            requireFlyTo: false
+                        });
+                    }
                 }
             }
         })();
@@ -170,8 +174,6 @@ class Search extends React.Component {
     }
 
     renderMap() {
-        console.log("active coords: " + this.state.activeLat + " | " + this.state.activeLon);
-
         return (
             <section style={styles.InterctiveMapStyle}>
                 <MapContainer
@@ -185,6 +187,17 @@ class Search extends React.Component {
                         <MapFeature.ClickProcesser mapComp={this}/>
                         {this.state.drawArea ?
                             <Polygon pathOptions={{color: "purple"}} positions={this.state.area} /> : null}
+
+                        {this.state.activeObjects.length === 0 ? null : this.state.activeObjects.map(obj => {
+                            { return (
+                            <Marker
+                                position={[obj.lat, obj.lon]}
+                                icon={MapFeature.DefaultMarkerIcon()}>
+                                    <Popup>
+                                        {obj.name}
+                                    </Popup>
+                            </Marker>) }
+                        })}
                 </MapContainer>
             </section>
         );
@@ -232,18 +245,18 @@ class Search extends React.Component {
                     "6vh",
                     this.state.activeCountryIdx === -1 ? [] :
                     this.state.countriesInfo[this.state.activeCountryIdx].cities.map(
-                        (city) => (
-                            <Dropdown.Item onClick={() => {
+                        (city) => {
+                            return <Dropdown.Item onClick={() => {
                                 this.setState({
                                     activeCity: city.name,
-                                    activeLat: city.lat,
-                                    activeLon: city.lon,
+                                    activeLat: city.center.x,
+                                    activeLon: city.center.y,
                                     requireFlyTo: true
                                 });
                             }}>
                                 {city.name}
                             </Dropdown.Item>
-                        )
+                        }
                     ).concat(
                         [<Dropdown.Divider />,
                         <Dropdown.Item onClick={() => {
@@ -282,14 +295,79 @@ class Search extends React.Component {
                 <button
                     type="button"
                     style={styles.SearchManageSearchButton}
-                    onClick={() => {
-                        console.log(this.state.elementsPriority);
+                    onClick={async () => {
+                        if (this.state.activeCountryIdx === -1) {
+                            return;
+                        }
+
+                        if (this.state.activeCity === "" && this.state.area.length === 0) {
+                            return;
+                        }
+
+                        const response = await fetch("/api/perform_request", {
+                            method: "POST",
+                            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "Account": this.state.userLogin,
+                                "Parameters": this.state.elementsInfo.map((elem, idx) => {
+                                    return { "Element": elem, "Value": this.state.elementsPriority[idx] + 1 }
+                                }),
+
+                                "Border": this.state.area.map((elem, idx) => {
+                                    return { "X": elem[0], "Y": elem[1] }
+                                }),
+
+                                "Country": this.state.countriesInfo[this.state.activeCountryIdx].name,
+                                "City": this.state.activeCity
+                            })
+                        });
+
+                        if (response.ok) {
+                            const answer = await response.json();
+                            let newActiveObjects = answer.objects.map(e => {
+                                return {name: e.name, lat: e.coord.x, lon: e.coord.y};
+                            });
+                            
+                            this.setState({activeObjects: newActiveObjects});
+                            console.log(newActiveObjects);
+                        }
                     }}>
                     <p style={styles.ButtonTextStyle}>Search</p>
                 </button>
                 <button
                     type="button"
-                    style={styles.SearchManageSaveButton}>
+                    style={styles.SearchManageSaveButton}
+                    onClick={async () => {
+                        if (this.state.activeCountryIdx === -1) {
+                            return;
+                        }
+
+                        if (this.state.activeCity === "" && this.state.area.length === 0) {
+                            return;
+                        }
+
+                        const response = await fetch("/api/save_request", {
+                            method: "POST",
+                            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                "Account": this.state.userLogin,
+                                "Parameters": this.state.elementsInfo.map((elem, idx) => {
+                                    return { "Element": elem, "Value": this.state.elementsPriority[idx] + 1 }
+                                }),
+
+                                "Border": this.state.area.map((elem, idx) => {
+                                    return { "X": elem[0], "Y": elem[1] }
+                                }),
+
+                                "Country": this.state.countriesInfo[this.state.activeCountryIdx].name,
+                                "City": this.state.activeCity
+                            })
+                        });
+
+                        if (response.ok) {
+                            const answer = await response.json();
+                        }
+                    }}>
                     <p style={styles.ButtonTextStyle}>Save</p>
                 </button>
                 <button

@@ -70,10 +70,12 @@ namespace WAFIA.Database.Connectors {
 
             try {
                 if (await reader.ReadAsync()) {
+                    NpgsqlPoint sqlPoint = (NpgsqlPoint)reader["center"];
+                    
                     var country = new Country(
                         (long)reader["id"],
                         name,
-                        (Point)reader["center"]
+                        new Point(sqlPoint.X, sqlPoint.Y)
                         );
                     reader.Close();
                     return country;
@@ -189,12 +191,14 @@ namespace WAFIA.Database.Connectors {
 
             try {
                 if (await reader.ReadAsync()) {
+                    NpgsqlPoint npgsqlPoint = (NpgsqlPoint)reader["center"];
+
                     City city = new
                         (
                             (long)reader["id"],
                             name,
                             country.Id,
-                            (Point)reader["center"]
+                            new (npgsqlPoint.X, npgsqlPoint.Y)
                         );
                     reader.Close();
                     return city;

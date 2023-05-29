@@ -11,10 +11,10 @@ namespace WAFIA.Database.Connectors {
         private readonly NpgsqlCommand cmd;
 
         public async Task<bool> Add(Request request) {
-            if (request.Border == null && request.City == null) {
+            if ((request.Border == null || request.Border.Count == 0) && request.City == null) {
                 cmd.CommandText = $"INSERT INTO request (account, date, country) VALUES (@Account, @Date, @Country)";
             }
-            else if (request.Border == null) {
+            else if (request.Border == null || request.Border.Count == 0) {
                 cmd.CommandText = $"INSERT INTO request (account, date, country, city) " +
                     $"VALUES (@Account, @Date, @Country, @City)";
                 cmd.Parameters.AddWithValue("City", request.City);

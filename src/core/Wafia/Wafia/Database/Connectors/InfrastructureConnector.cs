@@ -256,10 +256,19 @@ namespace WAFIA.Database.Connectors {
                 cityIdText = $"city IN (SELECT id FROM city WHERE country = '{request.Country}')";
             }
 
-            if (request.Border != null) {
+            if (request.Border != null && request.Border.Count > 0) {
+                List<NpgsqlPoint> listPoints = new();
+
+                foreach (var point in request.Border) {
+                    listPoints.Add(new NpgsqlPoint(point.X, point.Y));
+                }
+
+                NpgsqlPolygon npgsqlPoints = new NpgsqlPolygon(listPoints);
+
+
                 cmd.CommandText = $"SELECT id, coordinates, infrastructure_element, name, city FROM infrastructure_object " +
                     $"WHERE {cityIdText} AND st_within(coordinates::geometry, @Border::geometry)";
-                cmd.Parameters.AddWithValue("Border", request.Border);
+                cmd.Parameters.AddWithValue("Border", npgsqlPoints);
             }
             else {
                 cmd.CommandText = $"SELECT id, coordinates, infrastructure_element, name, city FROM infrastructure_object " +

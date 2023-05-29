@@ -202,16 +202,17 @@ async Task HandleRequest(HttpContext context) {
 
                 var objs = await db.IC.Search(req);
 
-                var res = GeoAlgorithms.FindZones(req, objs);
+                var res = GeoAlgorithms.FindZones(req, objs, out List<InfrastructureObject> outObj);
 
                 List<ObjectJS> objectJsList = new();
 
-                foreach(var obj in objs) {
+                foreach (var obj in outObj)
+                {
                     objectJsList.Add(new(obj.Name, obj.Coord));
                 }
 
                 context.Response.StatusCode = 200;
-                await context.Response.WriteAsJsonAsync(new { result = res, objects = objectJsList });
+                await context.Response.WriteAsJsonAsync(new { result = res, objects = outObj });
             }
             else {
                 context.Response.StatusCode = 404;
