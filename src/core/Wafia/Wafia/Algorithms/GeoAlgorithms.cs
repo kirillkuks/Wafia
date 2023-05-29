@@ -2,8 +2,6 @@ using NpgsqlTypes;
 using WAFIA.Database.Types;
 
 namespace WAFIA.Algorithms {
-
-    using Point = NpgsqlPoint;
     public static class GeoAlgorithms {
         private const double deltaNet = 0.001d;
         private static readonly Dictionary<Value, double> valueDistMap = new() {
@@ -15,7 +13,7 @@ namespace WAFIA.Algorithms {
         public static List<PriorityPoint> FindZones(Request req, List<InfrastructureObject> objs) {
             List<PriorityPoint> zones = new();
 
-            if (req.Border == null || req.Border.Value.Count == 0) {
+            if (req.Border == null || req.Border.Count == 0) {
                 foreach (var obj in objs) {
                     foreach (var param in req.Parameters) {
                         if (obj.InfrElem != param.InfrElement) {

@@ -173,7 +173,7 @@ async Task HandleRequest(HttpContext context) {
         await context.Response.SendFileAsync("wwwroot/About.html");
     }
 
-    else if (context.Request.Path == "/api/save_request") {
+    else if (context.Request.Path == "/api/perform_request") {
         var reqJson = await context.Request.ReadFromJsonAsync<RequestJS>();
         if (reqJson != null) {
             List<Parameter> parameters = new();
@@ -185,8 +185,9 @@ async Task HandleRequest(HttpContext context) {
                 parameters.Add(new((InfrastructureElement)element, (Value)paramJs.Value));
             }
             var country = await db.GC.GetCountry(reqJson.Country);
-            if (country != null) {
-                Request req = new(0, reqJson.Account, DateTime.Now, country.Id, parameters);
+            var acc = await db.AC.Get(reqJson.Account);
+            if (country != null && acc != null) {
+                Request req = new(0, acc.Id, DateTime.Now, country.Id, parameters);
 
                 if (reqJson.City != null) {
                     var city = await db.GC.GetCity(reqJson.City, country);
@@ -203,8 +204,14 @@ async Task HandleRequest(HttpContext context) {
 
                 var res = GeoAlgorithms.FindZones(req, objs);
 
+                List<ObjectJS> objectJsList = new();
+
+                foreach(var obj in objs) {
+                    objectJsList.Add(new(obj.Name, obj.Coord));
+                }
+
                 context.Response.StatusCode = 200;
-                await context.Response.WriteAsJsonAsync(new { result = res });
+                await context.Response.WriteAsJsonAsync(new { result = res, objects = objectJsList });
             }
             else {
                 context.Response.StatusCode = 404;
@@ -217,7 +224,7 @@ async Task HandleRequest(HttpContext context) {
         }
     }
 
-    else if (context.Request.Path == "/api/perform_request") {
+    else if (context.Request.Path == "/api/save_request") {
         var reqJson = await context.Request.ReadFromJsonAsync<RequestJS>();
         if (reqJson != null) {
             List<Parameter> parameters = new();
@@ -229,8 +236,9 @@ async Task HandleRequest(HttpContext context) {
                 parameters.Add(new((InfrastructureElement)element, (Value)paramJs.Value));
             }
             var country = await db.GC.GetCountry(reqJson.Country);
-            if (country != null) {
-                Request req = new(0, reqJson.Account, DateTime.Now, country.Id, parameters);
+            var acc = await db.AC.Get(reqJson.Account);
+            if (country != null && acc != null) {
+                Request req = new(0, acc.Id, DateTime.Now, country.Id, parameters);
 
                 if (reqJson.City != null) {
                     var city = await db.GC.GetCity(reqJson.City, country);
@@ -272,9 +280,9 @@ async Task HandleRequest(HttpContext context) {
             var cities = await db.GC.GetCities(country);
             List<CityJs> cityJsList = new();
             foreach (var city in cities) {
-                cityJsList.Add(new(city.Name, city.Center.X, city.Center.Y));
+                cityJsList.Add(new(city.Name, city.Center));
             }
-            countryJsList.Add(new(country.Name, country.Center.X, country.Center.Y, cityJsList));
+            countryJsList.Add(new(country.Name, country.Center, cityJsList));
         }
         await context.Response.WriteAsJsonAsync(new { countries = countryJsList });
     }
@@ -314,26 +322,22 @@ class AccountJs {
     public string Password { get; set; } = "";
 }
 class CityJs {
-    public CityJs(string name, double lat, double lon) {
+    public CityJs(string name, Point center) {
         Name = name;
-        Lat = lat;
-        Lon = lon;
+        Center = center;
     }
-    public string Name { get; set; } = "";
-    public double Lat { get; set; }
-    public double Lon { get; set; }
+    public string Name { get; set; }
+    public Point Center { get; set; }
 }
 class CountryJs {
-    public CountryJs(string name, double lat, double lon, List<CityJs> cities) {
+    public CountryJs(string name, Point center, List<CityJs> cities) {
         Name = name;
-        Lat = lat;
-        Lon = lon;
+        Center = center;
         Cities = cities;
     }
     public List<CityJs> Cities { get; set; }
     public string Name { get; set; }
-    public double Lat { get; set; }
-    public double Lon { get; set; }
+    public Point Center { get; set; }
 }
 
 class ParameterJs {
@@ -345,15 +349,13 @@ class ParameterJs {
     }
 }
 class RequestJS {
-    public long Account { get; set; }
+    public string Account { get; set; }
     public List<ParameterJs> Parameters { get; set; }
     public List<Point>? Border { get; set; }
     public string Country { get; set; }
     public string? City { get; set; }
-    public DateTime Date { get; set; }
-
     public RequestJS(
-        long account, 
+        string account, 
         List<ParameterJs> parameters, 
         List<Point>? border, 
         string country, 
@@ -363,5 +365,15 @@ class RequestJS {
         Border = border;
         Country = country;
         City = city;
+    }
+}
+
+class ObjectJS {
+    public string Name { get; set; }
+    public Point Coord { get; set; }
+
+    public ObjectJS(string name, Point coord) {
+        Name = name; 
+        Coord = coord;
     }
 }
