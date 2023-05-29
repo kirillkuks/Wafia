@@ -2,7 +2,6 @@
 
 namespace WAFIA.Database.Types {
 
-    using Point = NpgsqlPoint;
     public enum InfrastructureElement : long {
         Healthcare = 56,
         University = 57,

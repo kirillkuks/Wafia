@@ -3,7 +3,6 @@ using NpgsqlTypes;
 using WAFIA.Database.Types;
 
 namespace WAFIA.Database.Connectors {
-    using Polygon = NpgsqlPolygon;
     public class RequestConnector {
         public RequestConnector(NpgsqlConnector connector) {
             cmd = connector.Cmd;
@@ -93,12 +92,25 @@ namespace WAFIA.Database.Connectors {
             List<DateTime> dates = new();
             List<long> countries = new();
             List<long?> cities = new();
-            List<Polygon?> borders = new();
+            List<List<Point>?> borders = new();
             try {
                 while (await reader.ReadAsync()) {
                     ids.Add((long)reader["id"]);
                     dates.Add((DateTime)reader["date"]);
-                    borders.Add(reader["border"] as Polygon?);
+                    var npgsqlPolygon = reader["border"] as NpgsqlPolygon?;
+                    if (npgsqlPolygon == null)
+                    {
+                        borders.Add(null);
+                    }
+                    else
+                    {
+                        List<Point> polygon = new();
+                        foreach (var point in npgsqlPolygon)
+                        {
+                            polygon.Add(new(point.X, point.Y));
+                        }
+                        borders.Add(polygon);
+                    }
                     countries.Add((long)reader["country"]);
                     cities.Add(reader["city"] as long?);
                 }
