@@ -63,6 +63,31 @@ namespace WAFIA.Database.Connectors {
                 return null;
             }
         }
+        public async Task<Country?> GetCountry(string name) {
+            cmd.CommandText = $"SELECT id, center FROM country WHERE name = '{name}'";
+
+            NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+            try {
+                if (await reader.ReadAsync()) {
+                    var country = new Country(
+                        (long)reader["id"],
+                        name,
+                        (Point)reader["center"]
+                        );
+                    reader.Close();
+                    return country;
+                }
+                else {
+                    reader.Close();
+                    return null;
+                }
+            }
+            catch {
+                reader.Close();
+                return null;
+            }
+        }
         public async Task<bool> AddCountry(Country country) {
             cmd.CommandText = $"INSERT INTO country (name, center) VALUES (@Name, @Center)";
             cmd.Parameters.AddWithValue("Name", country.Name);
@@ -143,6 +168,33 @@ namespace WAFIA.Database.Connectors {
                             (string)reader["name"],
                             (long)reader["country"],
                             point
+                        );
+                    reader.Close();
+                    return city;
+                }
+                else {
+                    reader.Close();
+                    return null;
+                }
+            }
+            catch {
+                reader.Close();
+                return null;
+            }
+        }
+        public async Task<City?> GetCity(string name, Country country) {
+            cmd.CommandText = $"SELECT id, center FROM city WHERE name = '{name}' AND country = '{country.Id}'";
+
+            NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+            try {
+                if (await reader.ReadAsync()) {
+                    City city = new
+                        (
+                            (long)reader["id"],
+                            name,
+                            country.Id,
+                            (Point)reader["center"]
                         );
                     reader.Close();
                     return city;

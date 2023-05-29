@@ -1,3 +1,4 @@
+using WAFIA.Algorithms;
 using WAFIA.Database;
 using WAFIA.Database.Types;
 using WAFIA.Loader;
@@ -63,7 +64,7 @@ async Task HandleRequest(HttpContext context) {
     }
 
     else if (context.Request.Path == "/api/login") {
-        var loginData = await context.Request.ReadFromJsonAsync<LoginData>();
+        var loginData = await context.Request.ReadFromJsonAsync<AccountJs>();
         bool userFound = false;
         bool innerFail = false;
 
@@ -95,7 +96,7 @@ async Task HandleRequest(HttpContext context) {
     }
 
     else if (context.Request.Path == "/api/signup") {
-        var loginData = await context.Request.ReadFromJsonAsync<LoginData>();
+        var loginData = await context.Request.ReadFromJsonAsync<AccountJs>();
         bool userFound = false;
 
         if (loginData != null) {
@@ -172,24 +173,105 @@ async Task HandleRequest(HttpContext context) {
         await context.Response.SendFileAsync("wwwroot/About.html");
     }
 
-    else if (context.Request.Path == "/api/search") {
-        context.Response.ContentType = "text/html; charset=utf-8";
-        await context.Response.WriteAsync("<h2>QWEQWE</h2>");
+    else if (context.Request.Path == "/api/perform_request") {
+        var reqJson = await context.Request.ReadFromJsonAsync<RequestJS>();
+        if (reqJson != null) {
+            List<Parameter> parameters = new();
+            foreach (var paramJs in reqJson.Parameters) {
+                var element = await db.IC.GetInfrElement(paramJs.Element);
+                if (element == null) {
+                    continue;
+                }
+                parameters.Add(new((InfrastructureElement)element, (Value)paramJs.Value));
+            }
+            var country = await db.GC.GetCountry(reqJson.Country);
+            var acc = await db.AC.Get(reqJson.Account);
+            if (country != null && acc != null) {
+                Request req = new(0, acc.Id, DateTime.Now, country.Id, parameters);
+
+                if (reqJson.City != null) {
+                    var city = await db.GC.GetCity(reqJson.City, country);
+                    if (city != null) {
+                        req.City = city.Id;
+                    }
+                }
+
+                if (reqJson.Border != null) {
+                    req.Border = reqJson.Border;
+                }
+
+                var objs = await db.IC.Search(req);
+
+                var res = GeoAlgorithms.FindZones(req, objs);
+
+                List<ObjectJS> objectJsList = new();
+
+                foreach(var obj in objs) {
+                    objectJsList.Add(new(obj.Name, obj.Coord));
+                }
+
+                context.Response.StatusCode = 200;
+                await context.Response.WriteAsJsonAsync(new { result = res, objects = objectJsList });
+            }
+            else {
+                context.Response.StatusCode = 404;
+                await context.Response.WriteAsJsonAsync(new { message = "cant find country with name" });
+            }
+        }
+        else {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsJsonAsync(new { message = "invalid request data" });
+        }
     }
 
-    //else if (context.Request.Path == "/api/get_cities") {
-    //    var countries = await db.GC.GetCountries();
-    //    List<CountryJs> countryJsList = new();
-    //    foreach (var country in countries) {
-    //        var cities = await db.GC.GetCities(country);
-    //        List<CityJs> cityJsList = new();
-    //        foreach (var city in cities) {
-    //            cityJsList.Add(new(city.Name, city.Center.X, city.Center.Y));
-    //        }
-    //        countryJsList.Add(new(country.Name, country.Center.X, country.Center.Y, cityJsList));
-    //    }
-    //    await context.Response.WriteAsJsonAsync(new { countries = countryJsList });
-    //}
+    else if (context.Request.Path == "/api/save_request") {
+        var reqJson = await context.Request.ReadFromJsonAsync<RequestJS>();
+        if (reqJson != null) {
+            List<Parameter> parameters = new();
+            foreach (var paramJs in reqJson.Parameters) {
+                var element = await db.IC.GetInfrElement(paramJs.Element);
+                if (element == null) {
+                    continue;
+                }
+                parameters.Add(new((InfrastructureElement)element, (Value)paramJs.Value));
+            }
+            var country = await db.GC.GetCountry(reqJson.Country);
+            var acc = await db.AC.Get(reqJson.Account);
+            if (country != null && acc != null) {
+                Request req = new(0, acc.Id, DateTime.Now, country.Id, parameters);
+
+                if (reqJson.City != null) {
+                    var city = await db.GC.GetCity(reqJson.City, country);
+                    if (city != null) {
+                        req.City = city.Id;
+                    }
+                }
+
+                if (reqJson.Border != null) {
+                    req.Border = reqJson.Border;
+                }
+
+                var res = await db.RC.Add(req);
+
+                if (!res) {
+                    context.Response.StatusCode = 500;
+                    await context.Response.WriteAsJsonAsync(new { message = "cant save request" });
+                }
+                else {
+                    context.Response.StatusCode = 200;
+                    await context.Response.WriteAsJsonAsync(new { message = "ok" });
+                }
+            }
+            else {
+                context.Response.StatusCode = 404;
+                await context.Response.WriteAsJsonAsync(new { message = "cant find country with name" });
+            }
+        }
+        else {
+            context.Response.StatusCode = 400;
+            await context.Response.WriteAsJsonAsync(new { message = "invalid request data" });
+        }
+    }
 
     else if (context.Request.Path == "/api/get_cities") {
         var countries = await db.GC.GetCountries();
@@ -198,9 +280,9 @@ async Task HandleRequest(HttpContext context) {
             var cities = await db.GC.GetCities(country);
             List<CityJs> cityJsList = new();
             foreach (var city in cities) {
-                cityJsList.Add(new(city.Name, city.Center.X, city.Center.Y));
+                cityJsList.Add(new(city.Name, city.Center));
             }
-            countryJsList.Add(new(country.Name, country.Center.X, country.Center.Y, cityJsList));
+            countryJsList.Add(new(country.Name, country.Center, cityJsList));
         }
         await context.Response.WriteAsJsonAsync(new { countries = countryJsList });
     }
@@ -217,7 +299,6 @@ async Task HandleRequest(HttpContext context) {
 }
 
 
-
 app.UseStaticFiles();
 app.UseSession();
 
@@ -229,8 +310,8 @@ app.Run();
 class RedirectResponse {
     public string Link { get; set; } = "";
 }
-class LoginData {
-    public LoginData(string login, string password, string mail) {
+class AccountJs {
+    public AccountJs(string login, string password, string mail) {
         Login = login;
         Mail = mail;
         Password = password;
@@ -240,27 +321,59 @@ class LoginData {
     public string Mail { get; set; } = "";
     public string Password { get; set; } = "";
 }
-
 class CityJs {
-    public CityJs(string name, double lat, double lon) {
+    public CityJs(string name, Point center) {
         Name = name;
-        Lat = lat;
-        Lon = lon;
+        Center = center;
     }
-    public string Name { get; set; } = "";
-    public double Lat { get; set; }
-    public double Lon { get; set; }
+    public string Name { get; set; }
+    public Point Center { get; set; }
 }
-
 class CountryJs {
-    public CountryJs(string name, double lat, double lon, List<CityJs> cities) {
+    public CountryJs(string name, Point center, List<CityJs> cities) {
         Name = name;
-        Lat = lat;
-        Lon = lon;
+        Center = center;
         Cities = cities;
     }
     public List<CityJs> Cities { get; set; }
     public string Name { get; set; }
-    public double Lat { get; set; }
-    public double Lon { get; set; }
+    public Point Center { get; set; }
+}
+
+class ParameterJs {
+    public string Element { get; set; }
+    public long Value { get; set; }
+    public ParameterJs(string element, long value) {
+        Element = element;
+        Value = value;
+    }
+}
+class RequestJS {
+    public string Account { get; set; }
+    public List<ParameterJs> Parameters { get; set; }
+    public List<Point>? Border { get; set; }
+    public string Country { get; set; }
+    public string? City { get; set; }
+    public RequestJS(
+        string account, 
+        List<ParameterJs> parameters, 
+        List<Point>? border, 
+        string country, 
+        string? city) {
+        Account = account;
+        Parameters = parameters;
+        Border = border;
+        Country = country;
+        City = city;
+    }
+}
+
+class ObjectJS {
+    public string Name { get; set; }
+    public Point Coord { get; set; }
+
+    public ObjectJS(string name, Point coord) {
+        Name = name; 
+        Coord = coord;
+    }
 }

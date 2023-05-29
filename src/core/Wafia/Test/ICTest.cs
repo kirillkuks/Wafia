@@ -6,11 +6,7 @@ namespace Test {
     public class ICTest {
         [TestMethod]
         public async Task ObjectTest() {
-            InfrastructureConnector? ic = IC();
 
-            Assert.IsNotNull(ic);
-
-            ic.
         }
     }
 }

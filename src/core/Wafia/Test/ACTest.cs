@@ -1,6 +1,6 @@
 using WAFIA.Database.Types;
 using WAFIA.Database.Connectors;
-using Wafia.Database;
+using WAFIA.Database;
 
 namespace Test {
     [TestClass]

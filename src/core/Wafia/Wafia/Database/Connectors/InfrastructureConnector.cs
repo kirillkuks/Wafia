@@ -32,7 +32,7 @@ namespace WAFIA.Database.Connectors {
             }
         }
 
-        public async Task<long?> GetCountry(string name)
+        public async Task<long?> GetInfrElement(string name)
         {
             cmd.CommandText = $"SELECT id FROM infrastructure_element WHERE name = '{name}'";
             NpgsqlDataReader reader = await cmd.ExecuteReaderAsync();
